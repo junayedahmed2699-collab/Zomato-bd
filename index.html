@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PointZone — Play & Level Up</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -531,7 +532,9 @@ body {
   margin: 0 auto 12px;
   border: 3px solid rgba(200,241,53,0.3);
   box-shadow: 0 0 28px rgba(200,241,53,0.2);
+  overflow: hidden;
 }
+.p-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .p-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
 .p-tag { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
 .p-pts-big {
@@ -951,7 +954,7 @@ body {
     <div class="lb-row"><div class="lb-rank">5</div><div class="lb-av" style="background:linear-gradient(135deg,#ff9a3c,#d4620a)">JY</div><div class="lb-info"><div class="lb-name">JayYo</div><div class="lb-level">Level 17</div></div><div class="lb-score">21,850 ⭐</div></div>
     <div class="lb-row"><div class="lb-rank">6</div><div class="lb-av" style="background:linear-gradient(135deg,#9b6dff,#6a3db8)">MX</div><div class="lb-info"><div class="lb-name">Maxxed</div><div class="lb-level">Level 16</div></div><div class="lb-score">19,200 ⭐</div></div>
     <div class="lb-row"><div class="lb-rank">7</div><div class="lb-av" style="background:linear-gradient(135deg,#3cdabc,#18a88c)">TS</div><div class="lb-info"><div class="lb-name">TealStar</div><div class="lb-level">Level 15</div></div><div class="lb-score">16,400 ⭐</div></div>
-    <div class="lb-row me"><div class="lb-rank">8</div><div class="lb-av" style="background:linear-gradient(135deg,var(--accent),#7ab020)">R</div><div class="lb-info"><div class="lb-name">Rahul_007 <span style="font-size:10px;color:var(--accent)">(You)</span></div><div class="lb-level">Level 12</div></div><div class="lb-score" id="lb-my-score">4,280 ⭐</div></div>
+    <div class="lb-row me"><div class="lb-rank">8</div><div class="lb-av" id="lb-my-av" style="background:linear-gradient(135deg,var(--accent),#7ab020)">R</div><div class="lb-info"><div class="lb-name" id="lb-my-name">Rahul_007 <span style="font-size:10px;color:var(--accent)">(You)</span></div><div class="lb-level">Level 12</div></div><div class="lb-score" id="lb-my-score">4,280 ⭐</div></div>
     <div class="lb-row"><div class="lb-rank">9</div><div class="lb-av" style="background:linear-gradient(135deg,#ff5c5c,#c43030)">ZR</div><div class="lb-info"><div class="lb-name">Zara_R</div><div class="lb-level">Level 11</div></div><div class="lb-score">3,990 ⭐</div></div>
     <div class="lb-row"><div class="lb-rank">10</div><div class="lb-av" style="background:linear-gradient(135deg,#8891b0,#555)">BB</div><div class="lb-info"><div class="lb-name">BlueBob</div><div class="lb-level">Level 10</div></div><div class="lb-score">3,210 ⭐</div></div>
   </div>
@@ -960,9 +963,9 @@ body {
 <!-- ════ PROFILE PAGE ════ -->
 <div class="page" id="pg-profile">
   <div class="profile-top">
-    <div class="p-av">R</div>
-    <div class="p-name">Rahul_007</div>
-    <div class="p-tag">ID: #1042837 · Member since Jan 2025</div>
+    <div class="p-av" id="pAvatar">R</div>
+    <div class="p-name" id="pName">Rahul_007</div>
+    <div class="p-tag" id="pTag">ID: #1042837 · Member since Jan 2025</div>
     <div class="p-pts-big" id="pPtsBig">4,280</div>
     <div class="p-pts-sub">⭐ Total Points Earned</div>
     <div class="level-bar-wrap">
@@ -1059,6 +1062,46 @@ function addPts(n) {
   document.getElementById('h-pts').textContent = pts.toLocaleString();
   document.getElementById('pPtsBig').textContent = pts.toLocaleString();
   document.getElementById('lb-my-score').textContent = pts.toLocaleString() + ' ⭐';
+}
+
+// ── TELEGRAM USER AUTO-DETECT ──
+function initTelegramUser() {
+  try {
+    const tg = window.Telegram && window.Telegram.WebApp;
+    if (!tg) return;
+    tg.ready();
+    tg.expand();
+
+    const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if (!user) return;
+
+    const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || (user.username ? '@' + user.username : 'Player');
+    const handle = user.username ? '@' + user.username : ('ID: #' + user.id);
+    const initial = (user.first_name ? user.first_name.charAt(0) : (user.username ? user.username.charAt(0) : 'P')).toUpperCase();
+
+    // Profile page
+    const pName = document.getElementById('pName');
+    const pTag = document.getElementById('pTag');
+    const pAvatar = document.getElementById('pAvatar');
+    if (pName) pName.textContent = fullName;
+    if (pTag) pTag.textContent = `${handle} · ID: ${user.id}`;
+    if (pAvatar) {
+      if (user.photo_url) {
+        pAvatar.innerHTML = `<img src="${user.photo_url}" alt="${fullName}">`;
+      } else {
+        pAvatar.textContent = initial;
+      }
+    }
+
+    // Leaderboard "You" row
+    const lbName = document.getElementById('lb-my-name');
+    const lbAv = document.getElementById('lb-my-av');
+    if (lbName) lbName.innerHTML = `${fullName} <span style="font-size:10px;color:var(--accent)">(You)</span>`;
+    if (lbAv) lbAv.textContent = initial;
+
+  } catch (e) {
+    console.log('Telegram user init skipped:', e);
+  }
 }
 
 // ── NAVIGATE ──
@@ -1245,7 +1288,8 @@ function watchAdBonus(pts_reward, label) {
 }
 
 // ── INIT ──
+initTelegramUser();
 drawWheel();
 </script>
 </body>
-                                                                                                                                                                                                 </html>
+</html>
