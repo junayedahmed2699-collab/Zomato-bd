@@ -3,763 +3,1249 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Zomato Platform</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<title>PointZone — Play & Level Up</title>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
-<script src="https://pl28943998.profitablecpmratenetwork.com/a9/9a/be/a99abee5ed3f2be3d61ef0e56db88d1b.js"></script>
-
-<!-- Monetag SDK loader (Zone ID টি Firebase থেকে লোড হয়) -->
-<script>
-function loadMoneytag(zoneId) {
-  if (!zoneId) return;
-  if (document.getElementById('monetag-sdk')) return;
-  // Monetag Interstitial / Rewarded
-  (function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s);}catch(e){}})('glizauvo.net', zoneId, document.createElement('script'));
-  // Tag to prevent double-load
-  const tag = document.createElement('span');
-  tag.id = 'monetag-sdk';
-  tag.style.display = 'none';
-  document.head.appendChild(tag);
-}
-</script>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=Hind+Siliguri:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#07080d;--bg2:#0f111a;--bg3:#171a26;--card:#111420;
-  --border:rgba(255,255,255,0.07);--accent:#7c6ffd;
-  --as:rgba(124,111,253,0.12);--green:#00e096;--gs:rgba(0,224,150,0.12);
-  --yellow:#ffc84a;--ys:rgba(255,200,74,0.12);--red:#ff5f5f;
-  --rs:rgba(255,95,95,0.12);--text:#e2e4ef;--muted:#5a6280;--taka:#ffc84a;
+:root {
+  --bg: #08090f;
+  --surface: #10121c;
+  --card: #141720;
+  --card2: #1a1e2e;
+  --lift: #1f2335;
+  --accent: #c8f135;
+  --accent2: #ff5c5c;
+  --blue: #5b8dee;
+  --purple: #9b6dff;
+  --orange: #ff9a3c;
+  --teal: #3cdabc;
+  --text: #eef0ff;
+  --muted: #5a6080;
+  --sub: #8891b0;
+  --border: rgba(255,255,255,0.06);
+  --glow-green: 0 0 24px rgba(200,241,53,0.25);
+  --glow-blue: 0 0 24px rgba(91,141,238,0.25);
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:90px;font-size:14px}
-::-webkit-scrollbar{display:none}
-#welcomeScreen{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99998;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(12px)}
-#welcomeScreen.open{display:flex}
-.welcome-box{background:linear-gradient(145deg,#0f111a,#171a2e);border:1px solid rgba(124,111,253,.3);border-radius:24px;padding:32px 24px;width:100%;max-width:380px;text-align:center;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
-.welcome-box::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(124,111,253,.15),transparent 70%)}
-.welcome-emoji{font-size:56px;margin-bottom:12px;position:relative;z-index:1}
-.welcome-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px;position:relative;z-index:1}
-.welcome-msg{font-size:14px;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:24px;position:relative;z-index:1}
-.welcome-btn{width:100%;background:linear-gradient(135deg,var(--accent),#b06bff);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;position:relative;z-index:1}
-.welcome-btn:active{transform:scale(.97)}
-#blockedScreen{position:fixed;inset:0;background:var(--bg);z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px}
-.blocked-ic{font-size:64px}
-.blocked-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--red);text-align:center}
-.blocked-sub{font-size:14px;color:var(--muted);text-align:center;line-height:1.7}
-#ls{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.ll{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.lsub{font-size:13px;color:var(--muted)}
-.lsp{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,18,0.97);backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;z-index:100;padding:10px 0 16px}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:2px 0}
-.ni-ic{font-size:22px;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.ni-lb{font-size:10px;font-weight:600;color:var(--muted);transition:color .2s;letter-spacing:.3px}
-.ni.active .ni-lb{color:var(--accent)}
-.ni.active .ni-ic{transform:translateY(-3px)}
-.ni-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity .2s;margin-top:-3px}
-.ni.active .ni-dot{opacity:1}
-.page{display:none;padding:0 16px;animation:fi .28s ease}
-.page.active{display:block}
-@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.pgt{padding:20px 0 10px;display:flex;align-items:center;justify-content:space-between}
-.pgtitle{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(120deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.prof{display:flex;align-items:center;gap:14px;padding:22px 0 16px}
-.ava{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#b06bff);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;border:2px solid rgba(124,111,253,.3)}
-.ava img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.pname{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff}
-.pid{font-size:11px;color:var(--muted);margin-top:3px;font-family:monospace;letter-spacing:.5px}
-.balc{background:linear-gradient(140deg,#100e30,#1c1060 55%,#2e1285);border-radius:22px;padding:22px 20px;margin-bottom:13px;position:relative;overflow:hidden;border:1px solid rgba(124,111,253,.25)}
-.balc::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(124,111,253,.2),transparent 70%)}
-.balbl{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:2px;font-weight:600;font-family:'Inter',sans-serif}
-.balamt-wrap{display:flex;align-items:baseline;gap:8px;margin:8px 0 4px;position:relative;z-index:1}
-.balamt{font-family:Arial,sans-serif;font-size:42px;font-weight:700;color:#fff;line-height:1}
-.bal-taka{font-family:'Hind Siliguri',sans-serif;font-size:20px;font-weight:700;color:var(--taka)}
-.balrow{display:flex;gap:10px;margin-top:16px;position:relative;z-index:1}
-.bals{flex:1;background:rgba(255,255,255,.08);border-radius:12px;padding:10px;text-align:center}
-.balsv{font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:#fff}
-.bals-unit{font-size:10px;color:var(--taka);font-weight:700;font-family:'Hind Siliguri',sans-serif}
-.balsl{font-size:10px;color:rgba(255,255,255,.45);margin-top:2px;font-family:'Inter',sans-serif}
-.wcard{background:linear-gradient(135deg,#0d1220,#131b2e);border-radius:20px;padding:20px;margin-bottom:13px;border:1px solid rgba(255,200,74,.2)}
-.wchd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.wctitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff}
-.wcrb{background:var(--ys);color:var(--yellow);border:1px solid rgba(255,200,74,.3);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif}
-.wcinfo{display:flex;gap:8px;margin-bottom:14px}
-.wcstat{flex:1;background:rgba(255,255,255,.04);border-radius:12px;padding:10px;text-align:center}
-.wcsv{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff}
-.wcsl{font-size:10px;color:var(--muted);margin-top:2px;font-family:'Inter',sans-serif;letter-spacing:.2px}
-.bigbtn{width:100%;border:none;border-radius:16px;padding:17px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;letter-spacing:.2px}
-.bigbtn:active{transform:scale(.97)}
-.bigbtn:disabled{opacity:.65;pointer-events:none;cursor:not-allowed}
-.watchbtn{background:linear-gradient(135deg,#ffc84a,#ff9f2a);color:#000}
-.watchbtn.cooldown{background:linear-gradient(135deg,#2a2a3a,#1a1a2a);color:var(--muted);border:1px solid var(--border)}
-.watchbtn.limit-done{background:linear-gradient(135deg,#1a2a1a,#0d1a0d);color:#4a7a4a;border:1px solid rgba(0,100,0,.3)}
-.wdbtn-main{background:linear-gradient(135deg,var(--green),#00b377);color:#fff}
-.wdbtn-ad{background:linear-gradient(135deg,var(--accent),#b06bff);color:#fff}
-.cooldown-bar-wrap{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin-top:10px;overflow:hidden;display:none}
-.cooldown-bar{height:100%;background:var(--yellow);border-radius:4px;transition:width 1s linear}
-.limit-info{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:10px;font-size:12px;font-family:'Inter',sans-serif}
-.limit-txt{color:var(--muted)}
-.limit-val{color:var(--yellow);font-weight:600}
-.sec2{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin:16px 0 10px;display:flex;align-items:center;gap:8px}
-.titem{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;transition:all .18s}
-.titem.done{opacity:.55}
-.tic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.tinf{flex:1;min-width:0}
-.tnm{font-size:13px;font-weight:600;color:#fff;font-family:'Inter',sans-serif}
-.tds{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Inter',sans-serif}
-.trw{font-size:13px;font-weight:700;color:var(--green);white-space:nowrap;font-family:'Inter',sans-serif}
-.task-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-.tbtn{background:var(--gs);color:var(--green);border:1px solid rgba(0,224,150,.25);border-radius:8px;padding:6px 13px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.2px;white-space:nowrap}
-.tbtn:active{transform:scale(.95)}
-.tdone{width:28px;height:28px;border-radius:50%;background:var(--gs);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--green);flex-shrink:0}
-.task-ov{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
-.task-ov.open{display:flex}
-.task-box{background:linear-gradient(145deg,#0f111a,#171a2e);border:1px solid rgba(124,111,253,.25);border-radius:22px;padding:28px 22px;width:100%;max-width:360px;text-align:center;animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
-.task-box-ic{font-size:46px;margin-bottom:10px}
-.task-box-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:8px}
-.task-box-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
-.task-box-btns{display:flex;flex-direction:column;gap:10px}
-.tbig{width:100%;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
-.tbig:active{transform:scale(.97)}
-.tbig.join{background:linear-gradient(135deg,#229ed9,#1a7fbf);color:#fff}
-.tbig.check{background:linear-gradient(135deg,var(--green),#00b377);color:#fff}
-.tbig.cancel{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
-.task-verify-status{font-size:12px;margin-top:8px;min-height:18px;font-family:'Inter',sans-serif}
-.vcard{background:#000;border-radius:20px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border)}
-.vph{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0a0a1a,#141428);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;cursor:pointer}
-.vplay{width:62px;height:62px;border-radius:50%;background:rgba(124,111,253,.75);display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid rgba(255,255,255,.2);z-index:2}
-.vbar{padding:12px 16px;background:var(--bg2)}
-.vbart{font-size:13px;font-weight:600;color:#fff;font-family:'Hind Siliguri',sans-serif}
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
-.scard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer;transition:all .2s;text-decoration:none}
-.scard:active{transform:scale(.96)}
-.sic{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.st{font-size:13px;font-weight:600;color:#fff;font-family:'Hind Siliguri',sans-serif}
-.sd{font-size:11px;color:var(--muted);font-family:'Hind Siliguri',sans-serif}
-.rhero{background:linear-gradient(135deg,#0d1117,#1a1f35);border:1px solid rgba(124,111,253,.2);border-radius:20px;padding:24px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden}
-.rhero::before{content:'👥';position:absolute;font-size:110px;opacity:.04;top:-10px;right:-20px}
-.remo{font-size:40px;margin-bottom:8px}
-.rht{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:5px}
-.rhs{font-size:12px;color:var(--muted);font-family:'Inter',sans-serif}
-.rstats{display:flex;gap:10px;margin-top:18px}
-.rstat{flex:1;background:var(--as);border:1px solid rgba(124,111,253,.2);border-radius:12px;padding:12px;text-align:center}
-.rsv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent)}
-.rsl{font-size:10px;color:var(--muted);margin-top:3px;font-family:'Inter',sans-serif;letter-spacing:.2px}
-.rlc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
-.flbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:8px;display:block;font-family:'Inter',sans-serif}
-.rbox{display:flex;gap:8px;align-items:center}
-.rtxt{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--accent);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cbtn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;flex-shrink:0;letter-spacing:.2px}
-.cbtn:active{transform:scale(.94)}
-.sbtn{width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;letter-spacing:.2px}
-.ritem{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
-.ritem:last-child{border-bottom:none}
-.rava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#b06bff);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
-.run{font-size:13px;font-weight:600;color:#fff;font-family:'Inter',sans-serif}
-.rdt{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Inter',sans-serif}
-.re{font-size:13px;font-weight:700;color:var(--green);margin-left:auto;white-space:nowrap;font-family:'Inter',sans-serif}
-.wbal{background:linear-gradient(135deg,#0d1117,#0a1f18);border:1px solid rgba(0,224,150,.2);border-radius:20px;padding:22px;margin-bottom:14px;text-align:center;position:relative;overflow:hidden}
-.wbal::before{content:'';position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(0,224,150,.07),transparent 70%)}
-.wbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;font-weight:700;font-family:'Inter',sans-serif}
-.wba-wrap{display:flex;align-items:baseline;justify-content:center;gap:8px;position:relative;z-index:1}
-.wba{font-family:Arial,sans-serif;font-size:44px;font-weight:700;color:var(--green);line-height:1}
-.wba-taka{font-family:'Hind Siliguri',sans-serif;font-size:20px;font-weight:700;color:var(--taka)}
-.wbs{font-size:12px;color:var(--muted);margin-top:4px;font-family:'Inter',sans-serif}
-.wdform{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
-.ftitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.fg{margin-bottom:14px}
-.sw{position:relative}
-select.fi,input.fi{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 14px;font-size:14px;color:#fff;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none;letter-spacing:.2px}
-select.fi:focus,input.fi:focus{border-color:rgba(124,111,253,.5)}
-select.fi option{background:#1a1d26}
-.sarr{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:12px}
-.wd-ad-info{background:rgba(124,111,253,.08);border:1px solid rgba(124,111,253,.2);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:12px;color:rgba(255,255,255,.7);display:none;line-height:1.6;font-family:'Inter',sans-serif}
-.hitem{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:9px}
-.htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.hwallet{display:flex;align-items:center;gap:8px}
-.hwic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.hwn{font-size:13px;font-weight:600;color:#fff;font-family:'Inter',sans-serif}
-.hamt{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff}
-.hbtm{display:flex;align-items:center;justify-content:space-between}
-.hacc{font-size:11px;color:var(--muted);font-family:monospace}
-.sbdg{border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;letter-spacing:.2px}
-.sp{background:var(--ys);color:var(--yellow);border:1px solid rgba(255,200,74,.25)}
-.sa{background:var(--gs);color:var(--green);border:1px solid rgba(0,224,150,.25)}
-.sr{background:var(--rs);color:var(--red);border:1px solid rgba(255,95,95,.25)}
-.ht{font-size:11px;color:var(--muted);margin-top:6px;font-family:'Inter',sans-serif}
-.hrr{background:var(--rs);border:1px solid rgba(255,95,95,.2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--red);margin-top:8px;display:flex;gap:6px;font-family:'Inter',sans-serif}
-.adov{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:28px}
-.adov.open{display:flex}
-.adov-type{display:none}
-.adov-type.watch{background:var(--ys);color:var(--yellow);border:1px solid rgba(255,200,74,.3)}
-.adov-type.wd{background:var(--gs);color:var(--green);border:1px solid rgba(0,224,150,.3)}
-.adov-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;text-align:center}
-.adov-step-lbl,.adov-net-name,.adov-status{display:none}
-.adov-steps{display:flex;gap:7px;margin:12px 0;flex-wrap:wrap;justify-content:center;max-width:320px}
-.adov-s{height:8px;border-radius:8px;background:rgba(255,255,255,.1);transition:all .35s;flex:1;min-width:20px;max-width:50px}
-.adov-s.done{background:var(--green)}
-.adov-s.active{background:var(--yellow);animation:puls .8s infinite}
-.adov-s.skip{background:rgba(255,255,255,.25)}
-@keyframes puls{0%,100%{opacity:1}50%{opacity:.35}}
-.adov-reward-wrap{display:flex;align-items:baseline;gap:6px;justify-content:center;margin:4px 0}
-.adov-reward{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:var(--yellow)}
-.adov-taka{font-family:'Hind Siliguri',sans-serif;font-size:18px;font-weight:700;color:var(--taka)}
-.adov-rsub{font-size:11px;color:var(--muted);text-align:center;font-family:'Inter',sans-serif}
-.adov-msg{display:none!important}
-.adov-wd-loading{display:none;flex-direction:column;align-items:center;gap:16px;margin-top:8px}
-.adov-wd-loading.show{display:flex}
-.adov-wd-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.1);border-top-color:var(--green);border-radius:50%;animation:sp .7s linear infinite}
-.adov-wd-txt{font-size:14px;color:var(--muted);font-family:'Inter',sans-serif}
-.adov-complete{text-align:center;padding:16px;display:none;flex-direction:column;align-items:center;gap:8px}
-.adov-complete.show{display:flex}
-.adov-complete-ic{font-size:48px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
-.adov-complete-txt{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff}
-.adov-complete-sub{font-size:13px;color:var(--muted);font-family:'Inter',sans-serif}
-@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
-.adov-continue{
-  margin-top:8px;
-  background:linear-gradient(135deg,var(--accent),#b06bff);
-  color:#fff;border:none;border-radius:14px;
-  padding:15px 36px;font-size:15px;font-weight:700;
-  cursor:pointer;font-family:'Inter',sans-serif;
-  display:none;letter-spacing:.3px;
-  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: 76px;
 }
-.adov-continue.show{display:block}
-.adov-continue:active{transform:scale(.96)}
-.adov-waiting{font-size:12px;color:var(--muted);font-family:'Inter',sans-serif;display:none;text-align:center;line-height:1.7}
-.adov-waiting.show{display:block}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(20,24,38,.97);border:1px solid rgba(124,111,253,.3);color:#fff;padding:12px 20px;border-radius:30px;font-size:13px;font-weight:500;z-index:9999;transition:transform .3s cubic-bezier(.34,1.4,.64,1);backdrop-filter:blur(20px);white-space:nowrap;font-family:'Inter',sans-serif}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.empty{text-align:center;padding:28px 20px;color:var(--muted);font-size:13px;font-family:'Inter',sans-serif}
-.eic{font-size:36px;margin-bottom:8px}
-.chip{border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;background:var(--as);color:var(--accent);border:1px solid rgba(124,111,253,.25);font-family:'Inter',sans-serif;letter-spacing:.3px}
+
+/* ─── HEADER ─── */
+.header {
+  padding: 14px 18px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,9,15,0.9);
+  backdrop-filter: blur(16px);
+  position: sticky; top:0; z-index:100;
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--accent); }
+
+.pts-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--card2);
+  border: 1px solid rgba(200,241,53,0.2);
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  box-shadow: var(--glow-green);
+  transition: all 0.3s;
+}
+.pts-pill .pts-icon { font-size: 16px; }
+
+/* ─── NAV TABS ─── */
+.nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(10,11,18,0.97);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+.nav-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  cursor: pointer; padding: 4px 2px;
+  border: none; background: none; color: var(--muted);
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 10px;
+  transition: color 0.2s;
+}
+.nav-btn .n-icon { font-size: 22px; transition: transform 0.2s; }
+.nav-btn.active { color: var(--accent); }
+.nav-btn.active .n-icon { transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(200,241,53,0.5)); }
+
+/* ─── PAGES ─── */
+.page { display:none; padding: 0 16px; animation: fadeUp 0.22s ease; }
+.page.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+/* ─── SECTION HEADER ─── */
+.sec {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 20px 0 12px;
+}
+.sec-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px; font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.sec-more { font-size: 12px; color: var(--sub); font-weight: 600; }
+
+/* ─── HOME: WELCOME BANNER ─── */
+.welcome-band {
+  background: linear-gradient(135deg, #141f14 0%, #0f1520 50%, #1a1030 100%);
+  border-radius: 20px;
+  padding: 22px 20px;
+  margin-top: 16px;
+  border: 1px solid rgba(200,241,53,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.welcome-band::before {
+  content:'';
+  position: absolute;
+  top:-60px; right:-60px;
+  width:200px; height:200px;
+  background: radial-gradient(circle, rgba(200,241,53,0.12) 0%, transparent 70%);
+  border-radius:50%;
+}
+.welcome-band::after {
+  content:'';
+  position: absolute;
+  bottom:-40px; left:-40px;
+  width:140px; height:140px;
+  background: radial-gradient(circle, rgba(155,109,255,0.1) 0%, transparent 70%);
+  border-radius:50%;
+}
+.wb-eyebrow {
+  font-size: 11px; font-weight: 700;
+  color: var(--accent); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 5px;
+}
+.wb-dot { width:6px; height:6px; background:var(--accent); border-radius:50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.5; transform:scale(1.3);} }
+.wb-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px; font-weight: 800;
+  line-height: 1.1; margin-bottom: 6px;
+}
+.wb-title em { color: var(--accent); font-style: normal; }
+.wb-sub { font-size: 13px; color: var(--sub); margin-bottom: 18px; line-height: 1.4; }
+.wb-actions { display: flex; gap: 10px; }
+.btn-primary {
+  padding: 11px 20px;
+  background: var(--accent);
+  border-radius: 12px;
+  border: none;
+  color: #0a0f00;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(200,241,53,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-primary:active { transform: scale(0.96); box-shadow: none; }
+.btn-ghost {
+  padding: 11px 20px;
+  background: transparent;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--sub);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-ghost:active { border-color: rgba(200,241,53,0.4); color: var(--accent); }
+
+/* ─── STAT STRIP ─── */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.stat-box {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 10px 12px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.stat-n {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 700;
+}
+.stat-n.g { color: var(--accent); }
+.stat-n.b { color: var(--blue); }
+.stat-n.p { color: var(--purple); }
+.stat-lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+/* ─── QUICK ACTIONS ─── */
+.quick-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.quick-btn {
+  background: var(--card);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 14px 6px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.quick-btn:active { transform: scale(0.94); }
+.quick-btn.active-q { border-color: rgba(200,241,53,0.3); background: rgba(200,241,53,0.05); }
+.q-icon { font-size: 24px; }
+.q-label { font-size: 11px; font-weight: 700; color: var(--sub); text-align: center; }
+
+/* ─── GAMES ─── */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.game-card {
+  background: var(--card);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s;
+}
+.game-card:active { transform: scale(0.96); }
+.game-card:hover { border-color: rgba(255,255,255,0.12); }
+
+.game-thumb {
+  height: 88px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  position: relative;
+}
+.g1 .game-thumb { background: linear-gradient(135deg, #1a0d2e, #2e1a50); }
+.g2 .game-thumb { background: linear-gradient(135deg, #0d1f2e, #1a3050); }
+.g3 .game-thumb { background: linear-gradient(135deg, #2e1a0d, #503020); }
+.g4 .game-thumb { background: linear-gradient(135deg, #0d2e1a, #1a5030); }
+.g5 .game-thumb { background: linear-gradient(135deg, #2e0d1a, #501a2e); }
+.g6 .game-thumb { background: linear-gradient(135deg, #1a2e0d, #305020); }
+
+.badge {
+  position: absolute; top:8px; right:8px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
+  padding: 3px 7px; border-radius: 20px;
+  text-transform: uppercase;
+}
+.badge.hot { background: #ff5c5c; color: #fff; }
+.badge.new { background: var(--accent); color: #000; }
+.badge.popular { background: var(--purple); color: #fff; }
+
+.game-body { padding: 10px 12px 14px; }
+.game-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.game-pts { font-size: 11px; color: var(--accent); font-weight: 700; }
+.game-play {
+  width: 100%; margin-top: 8px;
+  background: var(--lift);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px;
+  color: var(--sub); 
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.game-play:active { background: rgba(200,241,53,0.1); color: var(--accent); border-color: rgba(200,241,53,0.3); }
+
+/* ─── SPIN PAGE ─── */
+.spin-page-inner {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 0 20px;
+}
+.spin-meta {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 8px; width: 100%; margin-bottom: 24px;
+}
+.sm-box {
+  background: var(--card);
+  border-radius: 12px; padding: 12px 8px; text-align: center;
+  border: 1px solid var(--border);
+}
+.sm-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--text);
+}
+.sm-lbl { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+.wheel-wrap {
+  position: relative;
+  width: 290px; height: 290px;
+  margin-bottom: 28px;
+}
+.pointer-tri {
+  position: absolute;
+  top: -16px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 26px solid var(--accent);
+  z-index: 10;
+  filter: drop-shadow(0 4px 8px rgba(200,241,53,0.5));
+}
+#theWheel {
+  width: 290px; height: 290px;
+  border-radius: 50%;
+  border: 3px solid rgba(200,241,53,0.25);
+  box-shadow: 0 0 40px rgba(200,241,53,0.1), inset 0 0 40px rgba(0,0,0,0.4);
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+.wheel-hub {
+  position: absolute; top:50%; left:50%;
+  transform: translate(-50%,-50%);
+  width: 52px; height: 52px;
+  background: var(--bg);
+  border: 3px solid rgba(200,241,53,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; z-index: 5;
+  box-shadow: 0 0 16px rgba(200,241,53,0.3);
+}
+
+.spin-cta-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+
+.big-spin-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: 16px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 18px;
+  color: #0a0f00;
+  cursor: pointer;
+  box-shadow: 0 6px 28px rgba(200,241,53,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: -0.3px;
+}
+.big-spin-btn:active { transform: scale(0.97); box-shadow: none; }
+.big-spin-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.spin-result-box {
+  width: 100%;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  border: 1px solid rgba(200,241,53,0.2);
+  display: none;
+}
+.spin-result-box.show { display: block; animation: popUp 0.3s ease; }
+@keyframes popUp { from { transform: scale(0.85); opacity:0; } to { transform:none; opacity:1; } }
+.sr-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+.sr-amount { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--accent); }
+
+/* ─── TASKS PAGE ─── */
+.streak-card {
+  background: linear-gradient(135deg, #1a1030, #0d1f30);
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-top: 16px;
+  border: 1px solid rgba(155,109,255,0.2);
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 4px;
+}
+.streak-flame { font-size: 44px; }
+.streak-info { flex: 1; }
+.streak-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800;
+  color: var(--orange);
+}
+.streak-lbl { font-size: 12px; color: var(--sub); font-weight: 600; }
+.streak-claim {
+  padding: 10px 18px;
+  background: var(--orange);
+  border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 13px;
+  color: #000; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255,154,60,0.3);
+  transition: transform 0.15s;
+  white-space: nowrap;
+}
+.streak-claim:active { transform: scale(0.95); }
+
+.task-filter { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.tf-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600; font-size: 12px;
+  cursor: pointer; transition: all 0.2s;
+}
+.tf-btn.on {
+  background: rgba(200,241,53,0.1);
+  border-color: rgba(200,241,53,0.35);
+  color: var(--accent);
+}
+
+.task-item {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 15px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  transition: border-color 0.2s;
+}
+.task-item.done { opacity: 0.45; }
+.ti-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 21px; flex-shrink: 0;
+}
+.ic-b { background: rgba(91,141,238,0.12); border: 1px solid rgba(91,141,238,0.25); }
+.ic-g { background: rgba(200,241,53,0.08); border: 1px solid rgba(200,241,53,0.2); }
+.ic-p { background: rgba(155,109,255,0.12); border: 1px solid rgba(155,109,255,0.25); }
+.ic-o { background: rgba(255,154,60,0.12); border: 1px solid rgba(255,154,60,0.25); }
+.ic-r { background: rgba(255,92,92,0.12); border: 1px solid rgba(255,92,92,0.25); }
+.ic-t { background: rgba(60,218,188,0.12); border: 1px solid rgba(60,218,188,0.25); }
+
+.ti-body { flex: 1 }
+.ti-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.ti-sub { font-size: 11px; color: var(--muted); }
+.ti-right { text-align: right; flex-shrink: 0; }
+.ti-pts { font-weight: 800; font-size: 14px; color: var(--accent); margin-bottom: 5px; }
+.ti-btn {
+  padding: 5px 13px;
+  border-radius: 8px; border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 11px;
+  cursor: pointer; transition: all 0.15s;
+}
+.ti-btn.go { background: rgba(200,241,53,0.12); color: var(--accent); border: 1px solid rgba(200,241,53,0.25); }
+.ti-btn.go:active { background: rgba(200,241,53,0.25); }
+.ti-btn.dn { background: rgba(60,218,188,0.1); color: var(--teal); border: 1px solid rgba(60,218,188,0.2); cursor: default; }
+
+/* ─── LEADERBOARD ─── */
+.lb-podium {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 8px; margin: 16px 0 20px;
+}
+.podium-item { display: flex; flex-direction: column; align-items: center; }
+.podium-avatar {
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; color: #000; font-family: 'Syne', sans-serif;
+  margin-bottom: 6px; flex-shrink: 0;
+}
+.p1 .podium-avatar { width:60px; height:60px; font-size:22px; background: linear-gradient(135deg, #f5d020, #f5a623); box-shadow: 0 0 20px rgba(245,208,32,0.4); }
+.p2 .podium-avatar { width:48px; height:48px; font-size:18px; background: linear-gradient(135deg, #c0c0c0, #999); }
+.p3 .podium-avatar { width:44px; height:44px; font-size:16px; background: linear-gradient(135deg, #cd7f32, #a0522d); }
+.podium-name { font-size: 11px; font-weight: 700; color: var(--sub); margin-bottom: 4px; }
+.podium-pts-lbl { font-size: 12px; font-weight: 800; color: var(--accent); }
+.podium-base {
+  border-radius: 10px 10px 0 0;
+  width: 76px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: rgba(255,255,255,0.5);
+}
+.p1 .podium-base { height: 56px; background: rgba(245,208,32,0.12); border: 1px solid rgba(245,208,32,0.2); }
+.p2 .podium-base { height: 40px; background: rgba(192,192,192,0.08); border: 1px solid rgba(192,192,192,0.15); }
+.p3 .podium-base { height: 32px; background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.15); }
+
+.lb-list { margin-bottom: 6px; }
+.lb-row {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 7px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.lb-row.me { border-color: rgba(200,241,53,0.3); background: rgba(200,241,53,0.04); }
+.lb-rank { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--muted); width: 24px; text-align: center; }
+.lb-av {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; color: #000; flex-shrink: 0;
+}
+.lb-info { flex: 1; }
+.lb-name { font-weight: 700; font-size: 13px; }
+.lb-level { font-size: 11px; color: var(--muted); }
+.lb-score { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--accent); }
+
+/* ─── PROFILE PAGE ─── */
+.profile-top {
+  background: linear-gradient(160deg, #141f14 0%, #0d1020 60%, #1a1030 100%);
+  border-radius: 20px;
+  padding: 24px 20px;
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.profile-top::before {
+  content:'';
+  position:absolute; top:-80px; right:-80px;
+  width:220px; height:220px;
+  background: radial-gradient(circle, rgba(200,241,53,0.08), transparent);
+  border-radius:50%;
+}
+.p-av {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #7ab020);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: 900; color: #0a0f00;
+  margin: 0 auto 12px;
+  border: 3px solid rgba(200,241,53,0.3);
+  box-shadow: 0 0 28px rgba(200,241,53,0.2);
+}
+.p-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+.p-tag { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.p-pts-big {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px; font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.p-pts-sub { font-size: 13px; color: var(--sub); margin-top: 4px; font-weight: 600; }
+.level-bar-wrap { margin: 16px 0 0; }
+.level-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+.level-bar { height: 6px; background: var(--lift); border-radius: 6px; overflow: hidden; }
+.level-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), #7ab020); width: 68%; transition: width 0.8s ease; }
+
+.p-stats {
+  display: grid; grid-template-columns: repeat(2,1fr);
+  gap: 8px; margin-bottom: 14px;
+}
+.ps-box {
+  background: var(--card); border-radius: 14px;
+  padding: 14px; border: 1px solid var(--border);
+}
+.ps-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+.ps-val.g { color: var(--accent); }
+.ps-val.p { color: var(--purple); }
+.ps-val.b { color: var(--blue); }
+.ps-val.o { color: var(--orange); }
+.ps-lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 3px; }
+
+.ref-section {
+  background: var(--card);
+  border-radius: 16px; padding: 18px;
+  border: 1px solid rgba(60,218,188,0.15);
+  margin-bottom: 14px;
+}
+.ref-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.ref-sub { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
+.ref-box {
+  background: var(--bg);
+  border: 1px dashed rgba(60,218,188,0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ref-code-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--teal); letter-spacing: 2px; }
+.ref-copy-btn {
+  padding: 6px 14px;
+  background: rgba(60,218,188,0.12);
+  border: 1px solid rgba(60,218,188,0.25);
+  border-radius: 8px;
+  color: var(--teal);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 12px;
+  cursor: pointer;
+}
+
+.settings-list { margin-bottom: 20px; }
+.s-item {
+  background: var(--card);
+  border-radius: 12px; padding: 14px 15px;
+  margin-bottom: 6px; border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.s-item:active { border-color: rgba(200,241,53,0.25); }
+.s-icon { font-size: 18px; width: 28px; text-align: center; }
+.s-label { flex: 1; font-weight: 600; font-size: 14px; }
+.s-arrow { color: var(--muted); font-size: 14px; }
+
+/* ─── AD BONUS SECTION (last, optional) ─── */
+.ad-bonus-section {
+  margin: 8px 0 24px;
+  background: linear-gradient(135deg, #0d1f18, #0f1520);
+  border: 1px solid rgba(60,218,188,0.15);
+  border-radius: 18px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.ad-bonus-section::before {
+  content:'';
+  position:absolute; top:-40px; right:-40px;
+  width:120px; height:120px;
+  background: radial-gradient(circle, rgba(60,218,188,0.1), transparent);
+  border-radius:50%;
+}
+.ad-bonus-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--teal);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+}
+.ad-bonus-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.ad-bonus-sub { font-size: 12px; color: var(--sub); margin-bottom: 16px; line-height: 1.4; }
+.ad-options { display: flex; flex-direction: column; gap: 8px; }
+.ad-opt {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: border-color 0.2s;
+}
+.ad-opt:active { border-color: rgba(60,218,188,0.3); background: rgba(60,218,188,0.04); }
+.ao-icon { font-size: 24px; flex-shrink: 0; }
+.ao-info { flex: 1; }
+.ao-title { font-weight: 700; font-size: 13px; margin-bottom: 1px; }
+.ao-sub { font-size: 11px; color: var(--muted); }
+.ao-reward {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 14px; color: var(--teal);
+  flex-shrink: 0;
+}
+
+/* ─── MODALS ─── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 500;
+  display: none; align-items: flex-end; justify-content: center;
+}
+.overlay.show { display: flex; }
+.sheet {
+  background: var(--card);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 20px 32px;
+  width: 100%; max-width: 480px;
+  animation: sheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+.sheet-handle {
+  width: 38px; height: 4px;
+  background: var(--lift); border-radius: 4px;
+  margin: 0 auto 20px;
+}
+.sheet-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.sheet-sub { font-size: 13px; color: var(--sub); text-align: center; margin-bottom: 22px; }
+
+.game-choices { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 14px; }
+.gc {
+  background: var(--lift); border-radius: 12px; padding: 16px;
+  border: 1px solid var(--border); cursor: pointer; text-align: center;
+  transition: all 0.15s; font-size: 28px;
+}
+.gc span { display: block; font-size: 12px; color: var(--sub); font-weight: 700; margin-top: 4px; }
+.gc:active, .gc.sel { border-color: rgba(200,241,53,0.4); background: rgba(200,241,53,0.06); }
+.gc.win { border-color: rgba(200,241,53,0.5); background: rgba(200,241,53,0.08); animation: winFlash 0.4s ease; }
+.gc.lose { border-color: rgba(255,92,92,0.4); background: rgba(255,92,92,0.06); opacity:0.6; }
+@keyframes winFlash { 0%,100%{} 50%{ box-shadow: 0 0 20px rgba(200,241,53,0.4); } }
+
+.result-reveal { text-align: center; padding: 16px 0 4px; }
+.rr-icon { font-size: 48px; margin-bottom: 8px; }
+.rr-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.rr-pts { font-size: 28px; font-weight: 900; color: var(--accent); margin-bottom: 16px; }
+.rr-pts.lose { color: var(--accent2); }
+
+.sheet-cta {
+  width: 100%; padding: 14px;
+  background: var(--accent);
+  border: none; border-radius: 14px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 16px; color: #0a0f00;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(200,241,53,0.3);
+  transition: transform 0.15s;
+}
+.sheet-cta:active { transform: scale(0.97); }
+.sheet-cancel {
+  width: 100%; padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border); border-radius: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 14px; color: var(--sub);
+  cursor: pointer; margin-top: 8px;
+}
+
+/* Ad watch modal */
+.ad-timer-ring {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  border: 5px solid rgba(60,218,188,0.2);
+  border-top-color: var(--teal);
+  margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--teal);
+  animation: spin 1s linear infinite;
+}
+.ad-timer-ring.done { animation: none; border-color: var(--teal); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* TOAST */
+.toast {
+  position: fixed; top: 75px; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--card2);
+  border: 1px solid rgba(200,241,53,0.25);
+  color: var(--accent);
+  padding: 9px 18px;
+  border-radius: 30px;
+  font-weight: 700; font-size: 13px;
+  z-index: 1000; opacity: 0;
+  transition: all 0.28s;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-<script src="https://pl28944003.profitablecpmratenetwork.com/e8/fa/ff/e8fafff875e5c15d6348f130eaac93ca.js"></script>
-<div id="welcomeScreen">
-  <div class="welcome-box">
-    <div class="welcome-emoji" id="welcomeEmoji">🎉</div>
-    <div class="welcome-title" id="welcomeTitle">Welcome!</div>
-    <div class="welcome-msg" id="welcomeMsg">Start watching ads and earn money every day!</div>
-    <button class="welcome-btn" onclick="closeWelcome()">Let's Go! →</button>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">Point<span>Zone</span></div>
+  <div class="pts-pill">
+    <span class="pts-icon">⭐</span>
+    <span id="ptsBal">4,280</span> pts
   </div>
 </div>
-<div id="blockedScreen">
-  <div class="blocked-ic">🚫</div>
-  <div class="blocked-title">No internet connection...</div>
-  <div class="blocked-sub">Check your Network and try again</div>
-</div>
-<div id="ls">
-  <div class="ll">Zomato Platform</div>
-  <div class="lsub">Loading your account...</div>
-  <div class="lsp"></div>
-</div>
-<div class="page active" id="page-home">
-  <div class="prof">
-    <div class="ava" id="uava">U</div>
-    <div style="flex:1"><div class="pname" id="uname">—</div><div class="pid" id="uid">ID: —</div></div>
-    <div class="chip">⭐ Active</div>
-  </div>
-  <div class="balc">
-    <div class="balbl">Total Balance</div>
-    <div class="balamt-wrap"><div class="balamt" id="hbal">0.00</div><div class="bal-taka">টাকা</div></div>
-    <div class="balrow">
-      <div class="bals"><div class="balsv" id="sEarned">0.00</div><div class="bals-unit">টাকা</div><div class="balsl">Earned</div></div>
-      <div class="bals"><div class="balsv" id="sWd">0.00</div><div class="bals-unit">টাকা</div><div class="balsl">Withdrawn</div></div>
-      <div class="bals"><div class="balsv" id="sRef">0</div><div class="balsl" style="margin-top:12px">Referrals</div></div>
+
+<!-- ════ HOME PAGE ════ -->
+<div class="page active" id="pg-home">
+  <div class="welcome-band">
+    <div class="wb-eyebrow"><div class="wb-dot"></div> Season 3 Live</div>
+    <div class="wb-title">Play Games.<br>Complete Tasks.<br><em>Level Up.</em></div>
+    <div class="wb-sub">Earn points through games, daily spins & challenges. The more you play, the higher you rank!</div>
+    <div class="wb-actions">
+      <button class="btn-primary" onclick="goTo('games')">🎮 Play Now</button>
+      <button class="btn-ghost" onclick="goTo('leaderboard')">🏆 Leaderboard</button>
     </div>
   </div>
-  <div class="wcard">
-    <div class="wchd"><div class="wctitle">📺 বিজ্ঞাপন দেখে আয় করুন</div><div class="wcrb" id="wcRB">+৳ 0.50</div></div>
-    <div class="wcinfo">
-      <div class="wcstat" style="display:none"><div class="wcsv" id="wcAds">0</div><div class="wcsl">Ads / session</div></div>
-      <div class="wcstat"><div class="wcsv" id="wcToday">0</div><div class="wcsl">Watched today</div></div>
-      <div class="wcstat"><div class="wcsv" id="wcLimit">5</div><div class="wcsl">Daily limit</div></div>
-    </div>
-    <button class="bigbtn watchbtn" id="watchBtn" onclick="startChain('watch')">▶ বিজ্ঞাপন দেখুন</button>
-    <div class="cooldown-bar-wrap" id="cooldownBarWrap"><div class="cooldown-bar" id="cooldownBar" style="width:100%"></div></div>
-    <div class="limit-info"><span class="limit-txt">Today's progress</span><span class="limit-val" id="limitProgress">0 / 5</span></div>
+
+  <div class="stat-strip">
+    <div class="stat-box"><div class="stat-n g" id="h-pts">4,280</div><div class="stat-lbl">⭐ My Points</div></div>
+    <div class="stat-box"><div class="stat-n b">12</div><div class="stat-lbl">✅ Tasks Done</div></div>
+    <div class="stat-box"><div class="stat-n p">Lv.12</div><div class="stat-lbl">🏅 My Level</div></div>
   </div>
-  <div class="sec2">⚡ Tasks</div>
-  <div id="taskList"><div class="empty"><div class="eic">📋</div>No tasks yet</div></div>
-</div>
-<div class="page" id="page-support">
-  <div class="pgt"><div class="pgtitle" style="font-family:'Hind Siliguri',sans-serif">সাপোর্ট</div></div>
-  <div class="vcard">
-    <div class="vph" id="vph" onclick="openTutorial()">
-      <div class="vplay">▶</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.5);z-index:2;font-family:'Hind Siliguri',sans-serif">টিউটোরিয়াল ভিডিও</div>
-    </div>
-    <div class="vbar"><div class="vbart" id="vtitle">কিভাবে কাজ করবেন তার ভিডিও</div></div>
+
+  <div class="sec"><div class="sec-title">⚡ Quick Play</div></div>
+  <div class="quick-row">
+    <div class="quick-btn" onclick="goTo('spin')"><div class="q-icon">🎰</div><div class="q-label">Daily Spin</div></div>
+    <div class="quick-btn" onclick="goTo('games')"><div class="q-icon">🎮</div><div class="q-label">Games</div></div>
+    <div class="quick-btn" onclick="goTo('tasks')"><div class="q-icon">✅</div><div class="q-label">Tasks</div></div>
+    <div class="quick-btn" onclick="goTo('leaderboard')"><div class="q-icon">🏆</div><div class="q-label">Rank</div></div>
   </div>
-  <div class="sec2" style="font-family:'Hind Siliguri',sans-serif">🛟 সাহায্য নিন</div>
-  <div class="sgrid" id="supGrid"><div class="empty" style="grid-column:span 2;font-family:'Hind Siliguri',sans-serif">লোড হচ্ছে...</div></div>
-</div>
-<div class="page" id="page-referral">
-  <div class="pgt"><div class="pgtitle">Referral</div></div>
-  <div class="rhero">
-    <div class="remo">🤝</div>
-    <div class="rht">Invite & Earn</div>
-    <div class="rhs">Earn <span id="rbLbl" style="color:var(--taka);font-weight:700;font-family:'Hind Siliguri',sans-serif">৳ 5.00</span> bonus per referral</div>
-    <div class="rstats">
-      <div class="rstat"><div class="rsv" id="rTotal">0</div><div class="rsl">Total Refs</div></div>
-      <div class="rstat"><div class="rsv" id="rCoins">৳0</div><div class="rsl">Earned</div></div>
-      <div class="rstat"><div class="rsv" id="rActive">0</div><div class="rsl">Active</div></div>
+
+  <div class="sec"><div class="sec-title">🔥 Hot Games</div><div class="sec-more" onclick="goTo('games')">See all →</div></div>
+  <div class="games-grid">
+    <div class="game-card g1" onclick="openGame('Coin Flip','🪙',50,500)">
+      <div class="game-thumb">🪙<span class="badge hot">HOT</span></div>
+      <div class="game-body"><div class="game-name">Coin Flip</div><div class="game-pts">⭐ up to 500 pts</div><button class="game-play">▶ Play Free</button></div>
+    </div>
+    <div class="game-card g2" onclick="openGame('Number Guess','🔢',100,1000)">
+      <div class="game-thumb">🔢<span class="badge new">NEW</span></div>
+      <div class="game-body"><div class="game-name">Number Guess</div><div class="game-pts">⭐ up to 1000 pts</div><button class="game-play">▶ Play Free</button></div>
     </div>
   </div>
-  <div class="rlc">
-    <span class="flbl">Your Referral Link</span>
-    <div class="rbox"><div class="rtxt" id="rLink">Loading...</div><button class="cbtn" onclick="copyRef()">Copy</button></div>
-    <button class="sbtn" onclick="shareRef()">📤 Share on Telegram</button>
-  </div>
-  <div class="sec2">👥 Your Referrals</div>
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:4px 16px">
-    <div id="rList"><div class="empty"><div class="eic">👤</div>No referrals yet</div></div>
+</div>
+
+<!-- ════ GAMES PAGE ════ -->
+<div class="page" id="pg-games">
+  <div class="sec" style="margin-top:20px;"><div class="sec-title">🎮 All Games</div></div>
+  <div class="games-grid">
+    <div class="game-card g1" onclick="openGame('Coin Flip','🪙',50,500)">
+      <div class="game-thumb">🪙<span class="badge hot">HOT</span></div>
+      <div class="game-body"><div class="game-name">Coin Flip</div><div class="game-pts">⭐ up to 500 pts</div><button class="game-play">▶ Play</button></div>
+    </div>
+    <div class="game-card g2" onclick="openGame('Number Guess','🔢',100,1000)">
+      <div class="game-thumb">🔢<span class="badge new">NEW</span></div>
+      <div class="game-body"><div class="game-name">Number Guess</div><div class="game-pts">⭐ up to 1000 pts</div><button class="game-play">▶ Play</button></div>
+    </div>
+    <div class="game-card g3" onclick="openGame('Dice Roll','🎲',30,300)">
+      <div class="game-thumb">🎲</div>
+      <div class="game-body"><div class="game-name">Dice Roll</div><div class="game-pts">⭐ up to 300 pts</div><button class="game-play">▶ Play</button></div>
+    </div>
+    <div class="game-card g4" onclick="openGame('Lucky Box','📦',20,200)">
+      <div class="game-thumb">📦<span class="badge popular">TOP</span></div>
+      <div class="game-body"><div class="game-name">Lucky Box</div><div class="game-pts">⭐ up to 200 pts</div><button class="game-play">▶ Play</button></div>
+    </div>
+    <div class="game-card g5" onclick="openGame('Rock Paper Scissors','✂️',25,250)">
+      <div class="game-thumb">✂️</div>
+      <div class="game-body"><div class="game-name">RPS Battle</div><div class="game-pts">⭐ up to 250 pts</div><button class="game-play">▶ Play</button></div>
+    </div>
+    <div class="game-card g6" onclick="openGame('Color Pick','🎨',15,150)">
+      <div class="game-thumb">🎨</div>
+      <div class="game-body"><div class="game-name">Color Pick</div><div class="game-pts">⭐ up to 150 pts</div><button class="game-play">▶ Play</button></div>
+    </div>
   </div>
 </div>
-<div class="page" id="page-wallet">
-  <div class="pgt"><div class="pgtitle">Wallet</div></div>
-  <div class="wbal">
-    <div class="wbl">Available Balance</div>
-    <div class="wba-wrap"><div class="wba" id="wdBal">0.00</div><div class="wba-taka">টাকা</div></div>
-    <div class="wbs">Withdrawable</div>
+
+<!-- ════ SPIN PAGE ════ -->
+<div class="page" id="pg-spin">
+  <div class="spin-meta" style="margin-top:16px;">
+    <div class="sm-box"><div class="sm-val">8</div><div class="sm-lbl">Free Spins</div></div>
+    <div class="sm-box"><div class="sm-val" id="spinWonVal">0</div><div class="sm-lbl">Won Today ⭐</div></div>
+    <div class="sm-box"><div class="sm-val">🔥 12</div><div class="sm-lbl">Streak</div></div>
   </div>
-  <div class="wdform">
-    <div class="ftitle">💸 Withdraw Request</div>
-    <div class="fg"><span class="flbl">Payment Method</span>
-      <div class="sw">
-        <select class="fi" id="wdWallet">
-          <option value="">— Select method —</option>
-          <option value="bkash">💰 bKash</option>
-          <option value="nagad">💰 Nagad</option>
-          <option value="rocket">💰 Rocket</option>
-          <option value="binance">🟡 Binance (USDT)</option>
-          <option value="crypto">₿ Crypto</option>
-        </select>
-        <span class="sarr">▾</span>
+
+  <div class="spin-page-inner">
+    <div class="wheel-wrap">
+      <div class="pointer-tri"></div>
+      <canvas id="theWheel" width="290" height="290"></canvas>
+      <div class="wheel-hub">🌟</div>
+    </div>
+
+    <div class="spin-cta-wrap">
+      <button class="big-spin-btn" id="spinBtn" onclick="doSpin()">🎰 SPIN THE WHEEL</button>
+      <div class="spin-result-box" id="spinRes">
+        <div class="sr-label">You won</div>
+        <div class="sr-amount" id="spinResAmt">+200 ⭐</div>
       </div>
     </div>
-    <div class="fg"><span class="flbl">Account Number</span><input class="fi" type="text" id="wdAcc" placeholder="Enter your number..." inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
-    <div class="fg">
-      <span class="flbl">Amount</span>
-      <input class="fi" type="number" id="wdAmt" placeholder="0.00" inputmode="numeric" min="0">
-      <div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:'Inter',sans-serif">Minimum: <span id="minWd" style="color:var(--taka);font-family:'Hind Siliguri',sans-serif">৳ 50</span></div>
+  </div>
+</div>
+
+<!-- ════ TASKS PAGE ════ -->
+<div class="page" id="pg-tasks">
+  <div class="streak-card">
+    <div class="streak-flame">🔥</div>
+    <div class="streak-info">
+      <div class="streak-val">12 Days</div>
+      <div class="streak-lbl">Login Streak</div>
     </div>
-    <button class="bigbtn wdbtn-main" id="wdBtn" onclick="handleWithdraw()">Withdraw Now →</button>
-    <div class="wd-ad-info" id="wdAdInfo">⚡ <span id="wdAdInfoTxt">Watch ads before withdrawal</span></div>
+    <button class="streak-claim" onclick="claimStreak(this)">Claim +100 ⭐</button>
   </div>
-  <div class="sec2">📋 Withdrawal History</div>
-  <div id="wdHist"><div class="empty"><div class="eic">📭</div>No withdrawals yet</div></div>
-</div>
-<nav class="bnav">
-  <div class="ni active" onclick="showPage('home',this)"><div class="ni-ic">🏠</div><div class="ni-lb">Home</div><div class="ni-dot"></div></div>
-  <div class="ni" onclick="showPage('support',this)"><div class="ni-ic">☎️</div><div class="ni-lb">Support</div><div class="ni-dot"></div></div>
-  <div class="ni" onclick="showPage('referral',this)"><div class="ni-ic">🤝</div><div class="ni-lb">Referral</div><div class="ni-dot"></div></div>
-  <div class="ni" onclick="showPage('wallet',this)"><div class="ni-ic">💰</div><div class="ni-lb">Wallet</div><div class="ni-dot"></div></div>
-</nav>
-<div class="task-ov" id="taskOv">
-  <div class="task-box">
-    <div class="task-box-ic" id="tovIc">📢</div>
-    <div class="task-box-title" id="tovTitle">Join Channel</div>
-    <div class="task-box-sub" id="tovSub">Join the channel first, then verify to claim your reward.</div>
-    <div class="task-box-btns">
-      <button class="tbig join" onclick="tovOpenLink()">📲 Join Now</button>
-      <button class="tbig check" id="tovVerifyBtn" onclick="tovVerify()">✅ I've Joined — Verify</button>
-      <button class="tbig cancel" onclick="tovClose()">Cancel</button>
+
+  <div class="sec" style="margin-top:16px;"><div class="sec-title">✅ Daily Tasks</div></div>
+  <div class="task-filter">
+    <button class="tf-btn on">All</button>
+    <button class="tf-btn">Social</button>
+    <button class="tf-btn">Game</button>
+    <button class="tf-btn">Invite</button>
+  </div>
+
+  <div class="task-item done">
+    <div class="ti-icon ic-g">📅</div>
+    <div class="ti-body"><div class="ti-name">Daily Check-in</div><div class="ti-sub">Completed ✓</div></div>
+    <div class="ti-right"><div class="ti-pts">+100 ⭐</div><button class="ti-btn dn">Done ✓</button></div>
+  </div>
+  <div class="task-item">
+    <div class="ti-icon ic-b">📢</div>
+    <div class="ti-body"><div class="ti-name">Join Our Channel</div><div class="ti-sub">@PointZone_Official</div></div>
+    <div class="ti-right"><div class="ti-pts">+200 ⭐</div><button class="ti-btn go" onclick="doTask(this,200)">Join</button></div>
+  </div>
+  <div class="task-item">
+    <div class="ti-icon ic-p">🐦</div>
+    <div class="ti-body"><div class="ti-name">Follow on X / Twitter</div><div class="ti-sub">@PointZone_io</div></div>
+    <div class="ti-right"><div class="ti-pts">+150 ⭐</div><button class="ti-btn go" onclick="doTask(this,150)">Follow</button></div>
+  </div>
+  <div class="task-item">
+    <div class="ti-icon ic-o">🎮</div>
+    <div class="ti-body"><div class="ti-name">Play 3 Games Today</div><div class="ti-sub">1/3 completed</div></div>
+    <div class="ti-right"><div class="ti-pts">+300 ⭐</div><button class="ti-btn go" onclick="goTo('games')">Play</button></div>
+  </div>
+  <div class="task-item">
+    <div class="ti-icon ic-r">👥</div>
+    <div class="ti-body"><div class="ti-name">Invite 3 Friends</div><div class="ti-sub">1/3 friends joined</div></div>
+    <div class="ti-right"><div class="ti-pts">+500 ⭐</div><button class="ti-btn go" onclick="showRefSheet()">Invite</button></div>
+  </div>
+  <div class="task-item">
+    <div class="ti-icon ic-t">🎰</div>
+    <div class="ti-body"><div class="ti-name">Spin 5 Times</div><div class="ti-sub">2/5 spins done</div></div>
+    <div class="ti-right"><div class="ti-pts">+250 ⭐</div><button class="ti-btn go" onclick="goTo('spin')">Spin</button></div>
+  </div>
+
+  <!-- ★ AD BONUS — OPTIONAL, AT THE BOTTOM ★ -->
+  <div class="ad-bonus-section">
+    <div class="ad-bonus-eyebrow">📺 Optional Bonus</div>
+    <div class="ad-bonus-title">Watch Ads for Extra Points</div>
+    <div class="ad-bonus-sub">Everything above is 100% free. But if you want a little extra boost, watch a short ad for bonus points.</div>
+    <div class="ad-options">
+      <div class="ad-opt" onclick="watchAdBonus(50,'Short Ad')">
+        <div class="ao-icon">⚡</div>
+        <div class="ao-info"><div class="ao-title">Short Ad (15 sec)</div><div class="ao-sub">Quick bonus, no strings</div></div>
+        <div class="ao-reward">+50 ⭐</div>
+      </div>
+      <div class="ad-opt" onclick="watchAdBonus(150,'Video Ad')">
+        <div class="ao-icon">📹</div>
+        <div class="ao-info"><div class="ao-title">Video Ad (30 sec)</div><div class="ao-sub">Worth the extra wait</div></div>
+        <div class="ao-reward">+150 ⭐</div>
+      </div>
+      <div class="ad-opt" onclick="watchAdBonus(300,'Full Ad')">
+        <div class="ao-icon">🎁</div>
+        <div class="ao-info"><div class="ao-title">Full Ad (45 sec)</div><div class="ao-sub">Max bonus reward</div></div>
+        <div class="ao-reward">+300 ⭐</div>
+      </div>
     </div>
-    <div class="task-verify-status" id="tovStatus"></div>
   </div>
 </div>
-<div class="adov" id="adOverlay">
-  <div class="adov-type" id="adovType">📺 WATCH & EARN</div>
-  <div class="adov-title" id="adovTitle">Watching Ads...</div>
-  <div class="adov-step-lbl" id="adovStepLbl"></div>
-  <div class="adov-steps" id="adovSteps"></div>
-  <div class="adov-net-name" id="adovNetName"></div>
-  <div class="adov-reward-wrap">
-    <div class="adov-reward" id="adovReward">0.50</div>
-    <div class="adov-taka">টাকা</div>
+
+<!-- ════ LEADERBOARD PAGE ════ -->
+<div class="page" id="pg-leaderboard">
+  <div class="sec" style="margin-top:20px;"><div class="sec-title">🏆 Top Players</div><div class="sec-sub" style="font-size:12px; color:var(--muted);">Season 3</div></div>
+
+  <div class="lb-podium">
+    <div class="podium-item p2">
+      <div class="podium-avatar">SK</div>
+      <div class="podium-name">SK_Gamer</div>
+      <div class="podium-pts-lbl">38,400 ⭐</div>
+      <div class="podium-base">2</div>
+    </div>
+    <div class="podium-item p1">
+      <div class="podium-avatar">AX</div>
+      <div class="podium-name">Axel_Pro</div>
+      <div class="podium-pts-lbl">51,200 ⭐</div>
+      <div class="podium-base">1</div>
+    </div>
+    <div class="podium-item p3">
+      <div class="podium-avatar">RZ</div>
+      <div class="podium-name">Reza_07</div>
+      <div class="podium-pts-lbl">29,750 ⭐</div>
+      <div class="podium-base">3</div>
+    </div>
   </div>
-  <div class="adov-rsub" id="adovRSub">reward</div>
-  <div class="adov-msg" id="adovMsg"></div>
-  <div class="adov-status" id="adovStatus"></div>
-  <div class="adov-waiting" id="adovWaiting">বিজ্ঞাপনটি দেখা শেষ হলে<br>নিচের বাটনে ট্যাপ করুন</div>
-  <button class="adov-continue" id="adovContinue" onclick="onAdsterraBack()">✅ বিজ্ঞাপন দেখা হয়েছে</button>
-  <div class="adov-wd-loading" id="adovWdLoading">
-    <div class="adov-wd-spinner"></div>
-    <div class="adov-wd-txt">Processing your withdrawal...</div>
-  </div>
-  <div class="adov-complete" id="adovComplete">
-    <div class="adov-complete-ic">🎉</div>
-    <div class="adov-complete-txt" id="adovCompleteTxt">+৳ 0.50 Added!</div>
-    <div class="adov-complete-sub" id="adovCompleteSub">Balance updated automatically</div>
+
+  <div class="lb-list">
+    <div class="lb-row"><div class="lb-rank">4</div><div class="lb-av" style="background:linear-gradient(135deg,#5b8dee,#3a6cc4)">NK</div><div class="lb-info"><div class="lb-name">NikoPlay</div><div class="lb-level">Level 18</div></div><div class="lb-score">24,100 ⭐</div></div>
+    <div class="lb-row"><div class="lb-rank">5</div><div class="lb-av" style="background:linear-gradient(135deg,#ff9a3c,#d4620a)">JY</div><div class="lb-info"><div class="lb-name">JayYo</div><div class="lb-level">Level 17</div></div><div class="lb-score">21,850 ⭐</div></div>
+    <div class="lb-row"><div class="lb-rank">6</div><div class="lb-av" style="background:linear-gradient(135deg,#9b6dff,#6a3db8)">MX</div><div class="lb-info"><div class="lb-name">Maxxed</div><div class="lb-level">Level 16</div></div><div class="lb-score">19,200 ⭐</div></div>
+    <div class="lb-row"><div class="lb-rank">7</div><div class="lb-av" style="background:linear-gradient(135deg,#3cdabc,#18a88c)">TS</div><div class="lb-info"><div class="lb-name">TealStar</div><div class="lb-level">Level 15</div></div><div class="lb-score">16,400 ⭐</div></div>
+    <div class="lb-row me"><div class="lb-rank">8</div><div class="lb-av" style="background:linear-gradient(135deg,var(--accent),#7ab020)">R</div><div class="lb-info"><div class="lb-name">Rahul_007 <span style="font-size:10px;color:var(--accent)">(You)</span></div><div class="lb-level">Level 12</div></div><div class="lb-score" id="lb-my-score">4,280 ⭐</div></div>
+    <div class="lb-row"><div class="lb-rank">9</div><div class="lb-av" style="background:linear-gradient(135deg,#ff5c5c,#c43030)">ZR</div><div class="lb-info"><div class="lb-name">Zara_R</div><div class="lb-level">Level 11</div></div><div class="lb-score">3,990 ⭐</div></div>
+    <div class="lb-row"><div class="lb-rank">10</div><div class="lb-av" style="background:linear-gradient(135deg,#8891b0,#555)">BB</div><div class="lb-info"><div class="lb-name">BlueBob</div><div class="lb-level">Level 10</div></div><div class="lb-score">3,210 ⭐</div></div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+
+<!-- ════ PROFILE PAGE ════ -->
+<div class="page" id="pg-profile">
+  <div class="profile-top">
+    <div class="p-av">R</div>
+    <div class="p-name">Rahul_007</div>
+    <div class="p-tag">ID: #1042837 · Member since Jan 2025</div>
+    <div class="p-pts-big" id="pPtsBig">4,280</div>
+    <div class="p-pts-sub">⭐ Total Points Earned</div>
+    <div class="level-bar-wrap">
+      <div class="level-labels"><span>Level 12</span><span>4,280 / 6,000 pts → Lv.13</span></div>
+      <div class="level-bar"><div class="level-fill"></div></div>
+    </div>
+  </div>
+
+  <div class="p-stats">
+    <div class="ps-box"><div class="ps-val g" id="pGames">47</div><div class="ps-lbl">🎮 Games Played</div></div>
+    <div class="ps-box"><div class="ps-val p">23</div><div class="ps-lbl">🎰 Spins Done</div></div>
+    <div class="ps-box"><div class="ps-val b">12</div><div class="ps-lbl">✅ Tasks Done</div></div>
+    <div class="ps-box"><div class="ps-val o">🔥 12</div><div class="ps-lbl">Day Streak</div></div>
+  </div>
+
+  <div class="ref-section">
+    <div class="ref-title">👥 Refer Friends</div>
+    <div class="ref-sub">Invite friends and earn <span style="color:var(--teal);font-weight:800;">+500 ⭐</span> for each one who joins!</div>
+    <div class="ref-box">
+      <div class="ref-code-text">RAHUL007</div>
+      <button class="ref-copy-btn" onclick="toast('📋 Code copied!')">Copy</button>
+    </div>
+  </div>
+
+  <div class="settings-list">
+    <div class="s-item"><div class="s-icon">🔔</div><div class="s-label">Notifications</div><div class="s-arrow">›</div></div>
+    <div class="s-item"><div class="s-icon">🌐</div><div class="s-label">Language</div><div class="s-arrow">›</div></div>
+    <div class="s-item"><div class="s-icon">🛡️</div><div class="s-label">Privacy Policy</div><div class="s-arrow">›</div></div>
+    <div class="s-item"><div class="s-icon">❓</div><div class="s-label">Help & Support</div><div class="s-arrow">›</div></div>
+  </div>
+</div>
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <button class="nav-btn active" id="nav-home" onclick="goTo('home')"><div class="n-icon">🏠</div>Home</button>
+  <button class="nav-btn" id="nav-games" onclick="goTo('games')"><div class="n-icon">🎮</div>Games</button>
+  <button class="nav-btn" id="nav-spin" onclick="goTo('spin')"><div class="n-icon">🎰</div>Spin</button>
+  <button class="nav-btn" id="nav-tasks" onclick="goTo('tasks')"><div class="n-icon">✅</div>Tasks</button>
+  <button class="nav-btn" id="nav-leaderboard" onclick="goTo('leaderboard')"><div class="n-icon">🏆</div>Rank</button>
+  <button class="nav-btn" id="nav-profile" onclick="goTo('profile')"><div class="n-icon">👤</div>Profile</button>
+</div>
+
+<!-- ── GAME SHEET ── -->
+<div class="overlay" id="gameSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="gameSheetContent"></div>
+  </div>
+</div>
+
+<!-- ── AD BONUS SHEET ── -->
+<div class="overlay" id="adSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="adSheetContent"></div>
+  </div>
+</div>
+
+<!-- ── REF SHEET ── -->
+<div class="overlay" id="refSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">👥 Invite Friends</div>
+    <div class="sheet-sub">Share your code. Earn 500 pts per friend who joins.</div>
+    <div class="ref-box" style="margin-bottom:14px;">
+      <div class="ref-code-text">RAHUL007</div>
+      <button class="ref-copy-btn" onclick="toast('📋 Copied!')">Copy</button>
+    </div>
+    <button class="sheet-cta" onclick="toast('✅ Link shared!'); closeSheet('refSheet')">📤 Share Invite Link</button>
+    <button class="sheet-cancel" onclick="closeSheet('refSheet')">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
 <script>
-const firebaseConfig={apiKey:"AIzaSyCS9W1gnMSaIV2KjH1QMBTLgTt-ew0mnTo",authDomain:"zomato-platform.firebaseapp.com",databaseURL:"https://zomato-platform-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"zomato-platform",storageBucket:"zomato-platform.firebasestorage.app",messagingSenderId:"183991686104",appId:"1:183991686104:web:247a3edcd71a1148f418ad"};
-firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+// ── STATE ──
+let pts = 4280;
+let gamesPlayed = 47;
+let spinWonToday = 0;
 
-let APP={userId:null,userName:null,userPhoto:null,balance:0,totalEarned:0,totalWithdrawn:0,referralCode:null,referrals:[],completedTasks:[],watchedAds:[],settings:{referralBonus:5,minWithdraw:50,welcomeBonus:0,botUsername:'YourBot',botToken:'',watchChain:{count:3,reward:0.5,slots:[],cooldownSec:30,dailyLimit:5},withdrawChain:{enabled:false,count:2,message:'Watch ads before withdrawal',slots:[]},credentials:{adsgram:{},monetag:{},adsterra:{}},tasks:[],supportCards:[],video:{},welcome:{enabled:false,emoji:'🎉',title:'Welcome!',message:'Start watching ads and earn money every day!'}}};
+// ── TOAST ──
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
 
-let CS={active:false,type:null,queue:[],idx:0,total:0,reward:0,done:false,wdData:null};
-let cooldownInterval=null,cooldownEndTime=0;
-let TOV={taskId:null,link:null,channelId:null};
+// ── BALANCE ──
+function addPts(n) {
+  pts += n;
+  document.getElementById('ptsBal').textContent = pts.toLocaleString();
+  document.getElementById('h-pts').textContent = pts.toLocaleString();
+  document.getElementById('pPtsBig').textContent = pts.toLocaleString();
+  document.getElementById('lb-my-score').textContent = pts.toLocaleString() + ' ⭐';
+}
 
-function toArr(v){if(!v)return[];if(Array.isArray(v))return v;return Object.values(v);}
+// ── NAVIGATE ──
+function goTo(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pg-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'spin') drawWheel();
+}
 
-window.addEventListener('DOMContentLoaded',async()=>{
-  // ── AUTO REJECT (background) ──
-  setTimeout(async()=>{
-    try{
-      const cfgSnap=await db.ref('settings/autoReject').get();
-      const cfg=cfgSnap.val();
-      if(!cfg||!cfg.enabled)return;
-      const cutoff=Date.now()-((cfg.hours||1)*3600000);
-      const wSnap=await db.ref('withdrawals').get();
-      if(!wSnap.exists())return;
-      const tasks=[];
-      wSnap.forEach(c=>{const w=c.val();if(w.status==='pending'&&new Date(w.createdAt).getTime()<cutoff)tasks.push({id:c.key,userId:w.userId,amount:w.amount});});
-      for(const w of tasks){
-        await db.ref('withdrawals/'+w.id).update({status:'rejected',reason:'[Auto] '+(cfg.reason||'সময়মতো প্রসেস করা হয়নি')});
-        const uSnap=await db.ref('users/'+w.userId).get();
-        if(uSnap.exists()){const d=uSnap.val();await db.ref('users/'+w.userId).update({balance:(d.balance||0)+w.amount,totalWithdrawn:Math.max(0,(d.totalWithdrawn||0)-w.amount)});}
-      }
-    }catch(e){}
-  },3000);
+// ── CLOSE SHEETS ──
+function closeSheet(id) {
+  document.getElementById(id).classList.remove('show');
+}
 
-  const tg=window.Telegram?.WebApp;
-  if(tg){tg.ready();tg.expand();tg.setBackgroundColor('#07080d');}
-  const user=tg?.initDataUnsafe?.user;
-  if(user){APP.userId=String(user.id);APP.userName=[user.first_name,user.last_name].filter(Boolean).join(' ');APP.userPhoto=user.photo_url||null;}
-  else{APP.userId='demo_001';APP.userName='Demo User';}
-  APP.referralCode=APP.userId;
-  const startParam=tg?.initDataUnsafe?.start_param;
+function showRefSheet() {
+  document.getElementById('refSheet').classList.add('show');
+}
 
-  try{
-    let welcomeShown=false;
-    db.ref('settings').on('value',snap=>{
-      const s=snap.val()||{};
-      APP.settings={...APP.settings,...s};
-      renderTasks();renderSupport();renderVideo();
-      updateWatchCard();updateWdBtn();updateUI();
+// ── SPIN WHEEL ──
+const wheelSegs = [
+  {pts:50, color:'#7c5cbf'}, {pts:200, color:'#c8f135'},
+  {pts:25, color:'#ff5c5c'}, {pts:500, color:'#5b8dee'},
+  {pts:75, color:'#ff9a3c'}, {pts:150, color:'#3cdabc'},
+  {pts:10, color:'#6b7280'}, {pts:300, color:'#9b6dff'},
+];
+let spinning = false, rot = 0;
 
-      // ── Monetag SDK লোড ──
-      const mtid=s.credentials?.monetag?.zoneId;
-      if(mtid&&s.credentials?.monetag?.active)loadMoneytag(mtid);
+function drawWheel() {
+  const c = document.getElementById('theWheel');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const cx = 145, cy = 145, r = 140;
+  const arc = (2 * Math.PI) / wheelSegs.length;
+  ctx.clearRect(0, 0, 290, 290);
+  wheelSegs.forEach((s, i) => {
+    const a = i * arc - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, a, a + arc);
+    ctx.closePath();
+    ctx.fillStyle = s.color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(a + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px DM Sans';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 4;
+    ctx.fillText('⭐' + s.pts, r - 10, 5);
+    ctx.restore();
+  });
+}
 
-      document.getElementById('rbLbl').textContent=`৳ ${(APP.settings.referralBonus||5).toFixed(2)}`;
-      document.getElementById('minWd').textContent=`৳ ${(APP.settings.minWithdraw||50).toFixed(2)}`;
-      if(!welcomeShown){welcomeShown=true;setTimeout(checkWelcomePopup,800);}
-    });
+function doSpin() {
+  if (spinning) return;
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('spinRes').classList.remove('show');
+  const seg = Math.floor(Math.random() * wheelSegs.length);
+  const extra = Math.floor(Math.random() * 5 + 5);
+  const segDeg = 360 / wheelSegs.length;
+  rot += extra * 360 + seg * segDeg + segDeg / 2;
+  const w = document.getElementById('theWheel');
+  w.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+  w.style.transform = `rotate(${rot}deg)`;
+  setTimeout(() => {
+    spinning = false;
+    document.getElementById('spinBtn').disabled = false;
+    const won = wheelSegs[seg].pts;
+    addPts(won);
+    spinWonToday += won;
+    document.getElementById('spinWonVal').textContent = spinWonToday;
+    document.getElementById('spinResAmt').textContent = `+${won} ⭐`;
+    document.getElementById('spinRes').classList.add('show');
+    toast(`🎰 You won +${won} pts!`);
+  }, 4200);
+}
 
-    const uRef=db.ref('users/'+APP.userId);
-    const snap=await uRef.get();
-    if(!snap.exists()){
-      const settingsSnap=await db.ref('settings').get();
-      const settingsData=settingsSnap.val()||{};
-      const wb=settingsData.welcomeBonus??0;
-      const rb=settingsData.referralBonus??5;
-      await uRef.set({userId:APP.userId,userName:APP.userName,balance:wb,totalEarned:wb,totalWithdrawn:0,referredBy:startParam||null,referrals:[],completedTasks:[],watchedAds:[],blocked:false,cooldownEndTime:0,joinedAt:new Date().toISOString()});
-      if(startParam&&startParam!==APP.userId){
-        const rs=await db.ref('users/'+startParam).get();
-        if(rs.exists()){const rd=rs.val();const existingRefs=toArr(rd.referrals);await db.ref('users/'+startParam).update({balance:(rd.balance||0)+rb,totalEarned:(rd.totalEarned||0)+rb,referrals:[...existingRefs,{userId:APP.userId,name:APP.userName,date:new Date().toISOString()}]});}
-      }
-    }
-
-    uRef.on('value',snap=>{
-      const d=snap.val();if(!d)return;
-      if(d.blocked===true){document.getElementById('blockedScreen').style.display='flex';document.getElementById('ls').style.display='none';if(window.Telegram?.WebApp)setTimeout(()=>window.Telegram.WebApp.close(),400);return;}
-      APP.balance=d.balance||0;APP.totalEarned=d.totalEarned||0;APP.totalWithdrawn=d.totalWithdrawn||0;
-      APP.referrals=toArr(d.referrals);APP.completedTasks=toArr(d.completedTasks);APP.watchedAds=toArr(d.watchedAds);
-      cooldownEndTime=d.cooldownEndTime||0;
-      updateUI();updateWatchCard();checkCooldown();
-    });
-
-    db.ref('withdrawals').on('value',snap=>{
-      const items=[];
-      snap.forEach(c=>{const v=c.val();if(v&&String(v.userId)===String(APP.userId))items.push({id:c.key,...v});});
-      items.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-      renderWdHist(items);
-    });
-
-  }catch(e){console.error(e);showToast('⚠️ Connection error');}
-
-  updateProfile();updateUI();
-  document.getElementById('ls').style.display='none';
-});
-
-function checkWelcomePopup(){const wp=APP.settings.welcome||{};if(!wp.enabled)return;document.getElementById('welcomeEmoji').textContent=wp.emoji||'🎉';document.getElementById('welcomeTitle').textContent=wp.title||'Welcome!';document.getElementById('welcomeMsg').textContent=wp.message||'Start earning today!';document.getElementById('welcomeScreen').classList.add('open');}
-function closeWelcome(){document.getElementById('welcomeScreen').classList.remove('open');}
-
-function renderTasks(){
-  const tasks=(APP.settings.tasks||[]).filter(t=>t.active!==false);
-  const el=document.getElementById('taskList');
-  if(!tasks.length){el.innerHTML=`<div class="empty"><div class="eic">📋</div>No tasks yet</div>`;return;}
-  el.innerHTML=tasks.map(t=>{
-    const done=APP.completedTasks.includes(t.id);
-    const hasCh=t.channelId||t.channelUsername;
-    return`<div class="titem ${done?'done':''}">
-      <div class="tic" style="background:${t.bg||'rgba(0,224,150,.12)'}">${t.icon||'✅'}</div>
-      <div class="tinf"><div class="tnm">${t.name}</div><div class="tds">${t.desc||''}</div></div>
-      <div class="task-actions">
-        <div class="trw">+৳ ${Number(t.reward).toFixed(2)}</div>
-        ${done?`<div class="tdone">✓</div>`:hasCh?`<button class="tbtn" onclick="openTaskVerify('${t.id}')">Start</button>`:`<button class="tbtn" onclick="doTaskDirect('${t.id}')">Start</button>`}
+// ── GAME MODAL ──
+let curGame = {};
+function openGame(name, icon, min, max) {
+  curGame = {name, icon, min, max};
+  const content = document.getElementById('gameSheetContent');
+  content.innerHTML = `
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="font-size:52px; margin-bottom:8px;">${icon}</div>
+      <div class="sheet-title">${name}</div>
+      <div class="sheet-sub">Free to play · Win up to ${max} pts</div>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:20px;">
+      <div style="flex:1; background:var(--bg); border-radius:12px; padding:12px; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:18px; font-weight:800; color:var(--teal);">⭐${min}</div>
+        <div style="font-size:11px; color:var(--muted);">Min Win</div>
       </div>
-    </div>`;
-  }).join('');
+      <div style="flex:1; background:var(--bg); border-radius:12px; padding:12px; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:18px; font-weight:800; color:var(--accent);">⭐${max}</div>
+        <div style="font-size:11px; color:var(--muted);">Max Win</div>
+      </div>
+    </div>
+    <button class="sheet-cta" onclick="playGame()">🎮 Play Now — Free!</button>
+    <button class="sheet-cancel" onclick="closeSheet('gameSheet')">Cancel</button>
+  `;
+  document.getElementById('gameSheet').classList.add('show');
 }
 
-async function doTaskDirect(id){const t=(APP.settings.tasks||[]).find(x=>x.id===id);if(!t||APP.completedTasks.includes(id))return;if(t.link){const tg=window.Telegram?.WebApp;if(tg&&t.link.includes('t.me'))tg.openTelegramLink(t.link);else window.open(t.link,'_blank');await new Promise(r=>setTimeout(r,2000));}await completeTask(id,t);}
-
-function openTaskVerify(id){const t=(APP.settings.tasks||[]).find(x=>x.id===id);if(!t||APP.completedTasks.includes(id))return;TOV={taskId:id,link:t.link||'',channelId:t.channelId||t.channelUsername||''};document.getElementById('tovIc').textContent=t.icon||'📢';document.getElementById('tovTitle').textContent=t.name;document.getElementById('tovSub').textContent=`Join the channel to earn ৳${Number(t.reward).toFixed(2)}. After joining, tap "Verify" to claim.`;document.getElementById('tovStatus').textContent='';document.getElementById('tovVerifyBtn').textContent="✅ I've Joined — Verify";document.getElementById('tovVerifyBtn').classList.remove('verifying');document.getElementById('taskOv').classList.add('open');}
-function tovOpenLink(){if(!TOV.link)return;const tg=window.Telegram?.WebApp;if(tg&&TOV.link.includes('t.me'))tg.openTelegramLink(TOV.link);else window.open(TOV.link,'_blank');}
-
-async function tovVerify(){
-  const id=TOV.taskId;const t=(APP.settings.tasks||[]).find(x=>x.id===id);if(!t)return;
-  const botToken=APP.settings.botToken||'';const channelId=TOV.channelId;
-  if(!botToken||!channelId){await completeTask(id,t);tovClose();return;}
-  const btn=document.getElementById('tovVerifyBtn');const status=document.getElementById('tovStatus');
-  btn.textContent='⏳ Verifying...';btn.classList.add('verifying');
-  status.style.color='var(--muted)';status.textContent='Checking membership...';
-  try{
-    const cid=channelId.startsWith('@')?channelId:'@'+channelId;
-    const res=await fetch(`https://api.telegram.org/bot${botToken}/getChatMember?chat_id=${encodeURIComponent(cid)}&user_id=${APP.userId}`);
-    const data=await res.json();
-    if(data.ok){
-      const st=data.result?.status;
-      if(['member','administrator','creator','restricted'].includes(st)){status.style.color='var(--green)';status.textContent='✅ Verified! Reward added.';await completeTask(id,t);setTimeout(tovClose,1200);}
-      else{status.style.color='var(--red)';status.textContent='❌ Not a member yet. Please join first!';btn.textContent="✅ I've Joined — Verify";btn.classList.remove('verifying');}
-    }else{status.style.color='var(--yellow)';status.textContent='⚠️ Could not verify. Reward added anyway.';await completeTask(id,t);setTimeout(tovClose,1400);}
-  }catch(e){status.style.color='var(--yellow)';status.textContent='⚠️ Verify failed. Reward added.';await completeTask(id,t);setTimeout(tovClose,1400);}
+function playGame() {
+  const {min, max, name} = curGame;
+  const won = Math.random() > 0.42;
+  const amount = won ? Math.floor(Math.random() * (max - min) + min) : 0;
+  gamesPlayed++;
+  document.getElementById('pGames').textContent = gamesPlayed;
+  const content = document.getElementById('gameSheetContent');
+  content.innerHTML = `
+    <div class="result-reveal">
+      <div class="rr-icon">${won ? '🎉' : '😢'}</div>
+      <div class="rr-title">${won ? 'You Won!' : 'Better Luck!'}</div>
+      <div class="rr-pts ${won ? '' : 'lose'}">${won ? '+' + amount + ' ⭐' : 'No points this time'}</div>
+    </div>
+    <button class="sheet-cta" onclick="closeSheet('gameSheet'); ${won ? 'addPts(' + amount + '); toast(\"🎮 +' + amount + ' pts earned!\")' : ''}">
+      ${won ? '✅ Claim Points' : '🔁 Try Again Later'}
+    </button>
+  `;
 }
 
-function tovClose(){document.getElementById('taskOv').classList.remove('open');TOV={taskId:null,link:null,channelId:null};}
-
-async function completeTask(id,t){
-  if(APP.completedTasks.includes(id))return;
-  const s=await db.ref('users/'+APP.userId).get();const d=s.val();
-  const existingTasks=toArr(d.completedTasks);
-  await db.ref('users/'+APP.userId).update({balance:(d.balance||0)+Number(t.reward),totalEarned:(d.totalEarned||0)+Number(t.reward),completedTasks:[...existingTasks,id]});
-  showToast(`+৳ ${Number(t.reward).toFixed(2)} টাকা added!`);
+// ── TASKS ──
+function doTask(btn, n) {
+  btn.textContent = 'Done ✓';
+  btn.className = 'ti-btn dn';
+  btn.closest('.task-item').classList.add('done');
+  addPts(n);
+  toast(`✅ Task done! +${n} pts`);
 }
 
-function checkCooldown(){if(cooldownEndTime>Date.now())startCooldownUI(cooldownEndTime-Date.now());else clearCooldownUI();}
-function startCooldownUI(remainingMs){
-  clearInterval(cooldownInterval);
-  const btn=document.getElementById('watchBtn');const barWrap=document.getElementById('cooldownBarWrap');const bar=document.getElementById('cooldownBar');
-  const totalSec=APP.settings.watchChain?.cooldownSec||30;
-  barWrap.style.display='block';btn.disabled=true;btn.className='bigbtn watchbtn cooldown';
-  cooldownInterval=setInterval(()=>{const left=Math.max(0,cooldownEndTime-Date.now());const sec=Math.ceil(left/1000);bar.style.width=((left/(totalSec*1000))*100)+'%';if(sec>0)btn.textContent=`⏳ Wait ${sec}s...`;else clearCooldownUI();},500);
-}
-function clearCooldownUI(){
-  clearInterval(cooldownInterval);const btn=document.getElementById('watchBtn');
-  document.getElementById('cooldownBarWrap').style.display='none';
-  if(isDailyLimitReached()){btn.disabled=true;btn.className='bigbtn watchbtn limit-done';btn.textContent="✅ Today's limit reached";return;}
-  btn.disabled=false;btn.className='bigbtn watchbtn';btn.textContent='▶ বিজ্ঞাপন দেখুন';
-}
-function isDailyLimitReached(){const limit=APP.settings.watchChain?.dailyLimit||5;const today=new Date().toDateString();return APP.watchedAds.filter(w=>w.type==='watch_chain'&&new Date(w.date).toDateString()===today).length>=limit;}
-
-function updateWatchCard(){
-  const wc=APP.settings.watchChain||{};const reward=wc.reward||0.5;const limit=wc.dailyLimit||5;
-  document.getElementById('wcAds').textContent=(wc.slots||[]).length||wc.count||0;
-  document.getElementById('wcRB').textContent=`+৳ ${reward.toFixed(2)}`;
-  document.getElementById('wcLimit').textContent=limit;
-  document.getElementById('adovReward').textContent=reward.toFixed(2);
-  const today=new Date().toDateString();
-  const todayCount=APP.watchedAds.filter(w=>w.type==='watch_chain'&&new Date(w.date).toDateString()===today).length;
-  document.getElementById('wcToday').textContent=todayCount;
-  document.getElementById('limitProgress').textContent=`${todayCount} / ${limit}`;
-  checkCooldown();
+function claimStreak(btn) {
+  btn.textContent = 'Claimed ✓';
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  addPts(100);
+  toast('🔥 Streak bonus! +100 pts');
 }
 
-function buildQueue(chainData){const slots=chainData.slots||[];const creds=APP.settings.credentials||{};return slots.map(n=>({name:n,...(creds[n]||{})}));}
-
-function startChain(type,wdData=null){
-  if(type==='watch'&&isDailyLimitReached()){showToast("✅ Today's limit reached");return;}
-  if(type==='watch'&&cooldownEndTime>Date.now()){showToast(`⏳ Wait ${Math.ceil((cooldownEndTime-Date.now())/1000)}s`);return;}
-  const chainData=type==='watch'?(APP.settings.watchChain||{}):(APP.settings.withdrawChain||{});
-  const queue=buildQueue(chainData);
-  if(!queue.length){if(type==='watch'){showToast('⚠️ No ads configured');return;}else{submitWithdrawDirect(wdData);return;}}
-  CS={active:true,type,queue,idx:0,total:queue.length,reward:chainData.reward||0.5,done:false,wdData};
-  _slotAdvanced=false;
-  const typeEl=document.getElementById('adovType');const msg=document.getElementById('adovMsg');
-  document.getElementById('adovComplete').classList.remove('show');
-  document.getElementById('adovWdLoading').classList.remove('show');
-  _hideContinueBtn();
-  document.querySelector('.adov-reward-wrap').style.display='';
-  document.getElementById('adovSteps').style.display='';
-  document.getElementById('adovRSub').style.display='';
-  if(type==='watch'){
-    typeEl.textContent='📺 WATCH & EARN';typeEl.className='adov-type watch';
-    document.getElementById('adovReward').textContent=CS.reward.toFixed(2);
-    document.getElementById('adovRSub').textContent='reward';
-    document.getElementById('adovSteps').style.display='flex';
-    msg.style.display='none';
-  }else{
-    document.getElementById('adovTitle').textContent='Processing...';
-    document.querySelector('.adov-reward-wrap').style.display='none';
-    document.getElementById('adovSteps').style.display='none';
-    document.getElementById('adovRSub').style.display='none';
-    msg.style.display='none';
-    document.getElementById('adovWdLoading').classList.add('show');
-  }
-  document.getElementById('adovSteps').innerHTML=queue.map((_,i)=>`<div class="adov-s" id="as_${i}"></div>`).join('');
-  document.getElementById('adovTitle').textContent=type==='watch'?'Watching Ads...':'Processing...';
-  document.getElementById('adOverlay').classList.add('open');
-  playSlot();
+// ── AD BONUS ──
+let adBusy = false;
+function watchAdBonus(pts_reward, label) {
+  if (adBusy) return;
+  adBusy = true;
+  let t = label === 'Short Ad' ? 5 : label === 'Video Ad' ? 8 : 10;
+  const content = document.getElementById('adSheetContent');
+  content.innerHTML = `
+    <div class="sheet-title">📺 ${label}</div>
+    <div class="sheet-sub">Watching... Please wait</div>
+    <div class="ad-timer-ring" id="adRing">${t}</div>
+    <div style="text-align:center; color:var(--teal); font-weight:800; font-size:16px;">+${pts_reward} ⭐ incoming</div>
+  `;
+  document.getElementById('adSheet').classList.add('show');
+  const iv = setInterval(() => {
+    t--;
+    const ring = document.getElementById('adRing');
+    if (!ring) { clearInterval(iv); adBusy = false; return; }
+    ring.textContent = t;
+    if (t <= 0) {
+      clearInterval(iv);
+      adBusy = false;
+      ring.classList.add('done');
+      ring.textContent = '✓';
+      content.innerHTML = `
+        <div style="text-align:center;">
+          <div style="font-size:52px; margin-bottom:10px;">🎁</div>
+          <div class="sheet-title">Bonus Earned!</div>
+          <div style="font-size:32px; font-weight:900; color:var(--accent); margin:8px 0 4px;">+${pts_reward} ⭐</div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:20px;">Added to your points</div>
+          <button class="sheet-cta" onclick="closeSheet('adSheet'); addPts(${pts_reward}); toast('🎁 +${pts_reward} pts added!')">✅ Collect Bonus</button>
+        </div>
+      `;
+    }
+  }, 1000);
 }
 
-// ── SLOT ENGINE ──
-let _slotAdvanced=false;
-function _showContinueBtn(){document.getElementById('adovWaiting').classList.add('show');document.getElementById('adovContinue').classList.add('show');}
-function _hideContinueBtn(){document.getElementById('adovWaiting').classList.remove('show');document.getElementById('adovContinue').classList.remove('show');}
-function onAdsterraBack(){_hideContinueBtn();_next();}
-
-function _next(){
-  if(_slotAdvanced||!CS.active)return;_slotAdvanced=true;
-  const el=document.getElementById('as_'+CS.idx);if(el)el.className='adov-s done';
-  CS.idx++;playSlot();
-}
-
-function playSlot(){
-  if(!CS.active)return;
-  if(CS.idx>=CS.total){chainAllDone();return;}
-  _slotAdvanced=false;_hideContinueBtn();
-  const net=CS.queue[CS.idx];
-  document.querySelectorAll('.adov-s').forEach((el,i)=>{el.className='adov-s'+(i<CS.idx?' done':i===CS.idx?' active':'');});
-
-  if(net.name==='adsgram'){
-    if(!net.blockId){_next();return;}
-    try{
-      const ctrl=window.Adsgram?.init({blockId:String(net.blockId)});
-      if(!ctrl){_next();return;}
-      ctrl.show().then(()=>_next()).catch(()=>_next());
-    }catch(e){_next();}
-
-  }else if(net.name==='monetag'){
-    // ── Monetag: show() প্রতিশ্রুতি দেয় না তাই setTimeout ব্যবহার করে advance ──
-    if(!net.zoneId){_next();return;}
-    try{
-      // Monetag এর show ad function (SDK load হলে window.show ফাংশন থাকে)
-      if(typeof window.show==='function'){
-        window.show().then(()=>_next()).catch(()=>_next());
-      }else{
-        // SDK এখনো লোড না হলে 3 সেকেন্ড পরে advance
-        setTimeout(()=>_next(),3000);
-      }
-    }catch(e){_next();}
-
-  }else if(net.name==='adsterra'){
-    if(!net.link&&!net.script){_next();return;}
-    try{
-      if(net.link){const tg=window.Telegram?.WebApp;if(tg)tg.openLink(net.link);else window.open(net.link,'_blank','noopener');}
-      else if(net.script){const div=document.createElement('div');div.innerHTML=net.script;div.querySelectorAll('script').forEach(sc=>{const ns=document.createElement('script');if(sc.src){ns.src=sc.src;ns.async=true;}else ns.textContent=sc.textContent;document.body.appendChild(ns);});}
-    }catch(e){}
-    _showContinueBtn();
-
-  }else{_next();}
-}
-
-function onSlotDone(){_next();}
-function onSlotSkip(){_next();}
-
-async function chainAllDone(){
-  if(CS.done)return;CS.done=true;CS.active=false;_slotAdvanced=true;
-  _hideContinueBtn();
-  document.querySelectorAll('.adov-s').forEach(el=>{if(!el.classList.contains('skip'))el.className='adov-s done';});
-  if(CS.type==='watch'){
-    const reward=CS.reward;const cooldownSec=APP.settings.watchChain?.cooldownSec||30;const newCooldownEnd=Date.now()+(cooldownSec*1000);
-    try{
-      const snap=await db.ref('users/'+APP.userId).get();const d=snap.val();
-      const existingWatched=toArr(d.watchedAds);
-      const nw=[...existingWatched,{date:new Date().toISOString(),reward,type:'watch_chain'}];
-      await db.ref('users/'+APP.userId).update({balance:(d.balance||0)+reward,totalEarned:(d.totalEarned||0)+reward,watchedAds:nw,cooldownEndTime:newCooldownEnd});
-      cooldownEndTime=newCooldownEnd;
-      document.getElementById('adovTitle').textContent='Balance Updated!';
-      document.getElementById('adovCompleteTxt').textContent=`+৳ ${reward.toFixed(2)} টাকা Added!`;
-      document.getElementById('adovCompleteSub').textContent='Your balance has been updated';
-      document.getElementById('adovComplete').classList.add('show');
-      setTimeout(()=>{document.getElementById('adOverlay').classList.remove('open');startCooldownUI(newCooldownEnd-Date.now());showToast(`+৳ ${reward.toFixed(2)} টাকা added!`);CS={active:false,type:null,queue:[],idx:0,total:0,reward:0,done:false,wdData:null};},2000);
-    }catch(e){setTimeout(()=>document.getElementById('adOverlay').classList.remove('open'),2000);}
-  }else{
-    const savedWdData={...CS.wdData};
-    document.getElementById('adovTitle').textContent='Processing...';
-    document.getElementById('adovComplete').classList.remove('show');
-    document.getElementById('adovWdLoading').classList.add('show');
-    CS={active:false,type:null,queue:[],idx:0,total:0,reward:0,done:false,wdData:null};
-    try{await submitWithdrawDirect(savedWdData);}catch(e){showToast('❌ Submit error: '+e.message);}
-    document.getElementById('adOverlay').classList.remove('open');
-    document.getElementById('adovWdLoading').classList.remove('show');
-  }
-}
-
-function updateWdBtn(){document.getElementById('wdAdInfo').style.display='none';document.getElementById('wdBtn').textContent='Withdraw Now →';document.getElementById('wdBtn').className='bigbtn wdbtn-main';}
-
-function handleWithdraw(){
-  const wallet=document.getElementById('wdWallet').value,account=document.getElementById('wdAcc').value.trim(),amount=parseFloat(document.getElementById('wdAmt').value),minWd=APP.settings.minWithdraw||50;
-  if(!wallet)return showToast('⚠️ Select payment method');
-  if(!account)return showToast('⚠️ Enter account number');
-  if(!amount||amount<minWd)return showToast(`⚠️ Minimum ৳${minWd.toFixed(2)}`);
-  if(amount>APP.balance)return showToast('⚠️ Insufficient balance');
-  const wlMap={bkash:'bKash',nagad:'Nagad',rocket:'Rocket',binance:'Binance (USDT)',crypto:'Crypto'};
-  const wdData={wallet,walletLabel:wlMap[wallet]||wallet,account,amount};
-  const wdc=APP.settings.withdrawChain||{};
-  if(wdc.enabled&&(wdc.slots||[]).length>0)startChain('withdraw',wdData);else submitWithdrawDirect(wdData);
-}
-
-async function submitWithdrawDirect(wdData){
-  if(!wdData)return;
-  const btn=document.getElementById('wdBtn');const orig=btn.textContent;btn.disabled=true;btn.textContent='Processing...';
-  try{
-    const snap=await db.ref('users/'+APP.userId).get();const d=snap.val()||{};
-    await db.ref('users/'+APP.userId).update({balance:(d.balance||0)-wdData.amount,totalWithdrawn:(d.totalWithdrawn||0)+wdData.amount});
-    await db.ref('withdrawals').push({userId:APP.userId,userName:APP.userName,wallet:wdData.wallet,walletLabel:wdData.walletLabel,account:wdData.account,amount:wdData.amount,status:'pending',reason:'',createdAt:new Date().toISOString()});
-    document.getElementById('wdWallet').value='';document.getElementById('wdAcc').value='';document.getElementById('wdAmt').value='';
-    showToast('✅ Withdrawal request submitted!');
-  }catch(e){showToast('❌ Error: '+e.message);}
-  btn.disabled=false;btn.textContent=orig;
-}
-
-function renderSupport(){const cards=APP.settings.supportCards||[];const el=document.getElementById('supGrid');if(!cards.length){el.innerHTML=`<div class="empty" style="grid-column:span 2;font-family:'Hind Siliguri',sans-serif">কোনো সাপোর্ট লিংক নেই</div>`;return;}el.innerHTML=cards.map(c=>`<a href="${c.link||'#'}" class="scard" target="_blank"><div class="sic" style="background:${c.bg||'var(--as)'}">${c.icon||'💬'}</div><div class="st">${c.title}</div><div class="sd">${c.desc||''}</div></a>`).join('');}
-function renderVideo(){const v=APP.settings.video||{};document.getElementById('vtitle').textContent=v.title||'কিভাবে কাজ করবেন তার ভিডিও';document.getElementById('vph').innerHTML=`<div class="vplay">▶</div><div style="font-size:13px;color:rgba(255,255,255,.5);z-index:2;font-family:'Hind Siliguri',sans-serif">টিউটোরিয়াল ভিডিও</div>`;}
-function openTutorial(){const v=APP.settings.video||{};if(!v.url){showToast('⚠️ Tutorial link set করা নেই');return;}const tg=window.Telegram?.WebApp;if(tg){if(v.url.includes('t.me')||v.url.includes('telegram'))tg.openTelegramLink(v.url);else tg.openLink(v.url);}else window.open(v.url,'_blank');}
-
-function renderRefList(){const el=document.getElementById('rList');const refs=APP.referrals;if(!refs.length){el.innerHTML=`<div class="empty"><div class="eic">👤</div>No referrals yet</div>`;return;}el.innerHTML=[...refs].reverse().map(r=>`<div class="ritem"><div class="rava">${(r.name||'?').charAt(0).toUpperCase()}</div><div><div class="run">${r.name||'Unknown'}</div><div class="rdt">${ta(r.date)}</div></div><div class="re">+৳ ${Number(APP.settings.referralBonus||5).toFixed(2)}</div></div>`).join('');}
-
-function copyRef(){const l=`https://t.me/${APP.settings.botUsername||'YourBot'}?start=${APP.referralCode}`;navigator.clipboard?.writeText(l).catch(()=>{});showToast('📋 Referral link copied!');}
-function shareRef(){const l=`https://t.me/${APP.settings.botUsername||'YourBot'}?start=${APP.referralCode}`;const tg=window.Telegram?.WebApp;const u=`https://t.me/share/url?url=${encodeURIComponent(l)}&text=${encodeURIComponent('🚀 Join Zomato Platform & earn money daily!')}`;if(tg)tg.openTelegramLink(u);else window.open(u,'_blank');}
-function renderWdHist(items){const el=document.getElementById('wdHist');if(!items.length){el.innerHTML=`<div class="empty"><div class="eic">📭</div>No withdrawals yet</div>`;return;}const wm={bkash:{ic:'💰',bg:'rgba(220,50,120,.15)'},nagad:{ic:'💰',bg:'rgba(0,130,70,.15)'},rocket:{ic:'💰',bg:'rgba(138,0,230,.15)'},binance:{ic:'🟡',bg:'rgba(240,185,11,.15)'},crypto:{ic:'₿',bg:'rgba(247,147,26,.15)'}};const sm={pending:'sp',approved:'sa',rejected:'sr'};const sl={pending:'⏳ Pending',approved:'✓ Approved',rejected:'✗ Rejected'};el.innerHTML=items.map(h=>{const m=wm[h.wallet]||{ic:'💰',bg:'rgba(255,255,255,.08)'};return`<div class="hitem"><div class="htop"><div class="hwallet"><div class="hwic" style="background:${m.bg}">${m.ic}</div><div class="hwn">${h.walletLabel||h.wallet}</div></div><div class="hamt">৳ ${Number(h.amount).toFixed(2)}</div></div><div class="hbtm"><div class="hacc">${h.account}</div><div class="sbdg ${sm[h.status]||'sp'}">${sl[h.status]||'Pending'}</div></div><div class="ht">🕐 ${fd(h.createdAt)}</div>${h.status==='rejected'&&h.reason?`<div class="hrr">⚠️ <span>${h.reason}</span></div>`:''}</div>`;}).join('');}
-
-function updateProfile(){document.getElementById('uname').textContent=APP.userName;document.getElementById('uid').textContent='ID: '+APP.userId;const av=document.getElementById('uava');if(APP.userPhoto)av.innerHTML=`<img src="${APP.userPhoto}" alt="a">`;else av.textContent=APP.userName.charAt(0).toUpperCase();}
-
-function updateUI(){
-  const refCount=APP.referrals.length;
-  document.getElementById('hbal').textContent=APP.balance.toFixed(2);
-  document.getElementById('sEarned').textContent=APP.totalEarned.toFixed(2);
-  document.getElementById('sWd').textContent=APP.totalWithdrawn.toFixed(2);
-  document.getElementById('sRef').textContent=refCount;
-  document.getElementById('wdBal').textContent=APP.balance.toFixed(2);
-  document.getElementById('rTotal').textContent=refCount;
-  document.getElementById('rCoins').textContent=`৳${(refCount*(APP.settings.referralBonus||5)).toFixed(2)}`;
-  document.getElementById('rActive').textContent=refCount;
-  document.getElementById('rLink').textContent=`https://t.me/${APP.settings.botUsername||'YourBot'}?start=${APP.referralCode}`;
-  renderRefList();renderTasks();
-}
-
-function showPage(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');el.classList.add('active');}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
-function ta(iso){if(!iso)return'';const m=Math.floor((Date.now()-new Date(iso))/60000);if(m<1)return'Just now';if(m<60)return`${m}m ago`;const h=Math.floor(m/60);if(h<24)return`${h}h ago`;return`${Math.floor(h/24)}d ago`;}
-function fd(iso){if(!iso)return'—';return new Date(iso).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});}
+// ── INIT ──
+drawWheel();
 </script>
 </body>
-</html>
+                                                                                                                                                                                                 </html>
